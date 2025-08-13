@@ -1,4 +1,4 @@
-from .studentSchema import StudentCreate, StudentUpdate, StudentOut
+from .studentSchema import StudentCreate, StudentUpdate, StudentResponse
 from .instructorSchema import InstructorCreate, InstructorUpdate, InstructorOut
 from .courseSchema import CourseCreate, CourseUpdate, CourseOut
 from .moduleSchema import ModuleCreate, ModuleUpdate, ModuleOut
