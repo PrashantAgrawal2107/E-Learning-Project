@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from .core import dbConfig , config
-from .routers import userRouter , authentication
+from .routers import authentication
 from sqlalchemy import create_engine
 from app.models import Base
 
@@ -13,5 +13,4 @@ engine = create_engine(
 )
 Base.metadata.create_all(engine)
 
-app.include_router(userRouter.router)
 app.include_router(authentication.router)
