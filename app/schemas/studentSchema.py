@@ -26,6 +26,8 @@ class StudentResponse(BaseModel):
     id: int
     name: str
     email: str
+    created_on: datetime
+    updated_on: datetime
 
     class Config:
         from_attributes = True

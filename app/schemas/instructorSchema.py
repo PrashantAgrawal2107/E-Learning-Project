@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr , Field
 from typing import Optional, List
 from uuid import UUID
 from .courseSchema import CourseResponse
+from datetime import datetime
 
 # ---- Base schema ----
 class InstructorBase(BaseModel):
@@ -27,6 +28,8 @@ class InstructorResponse(BaseModel):
     id: int
     name: str
     email: str
+    created_on: datetime
+    updated_on: datetime
     courses: List[CourseResponse] = []
 
     class Config:

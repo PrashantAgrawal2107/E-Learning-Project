@@ -1,24 +1,30 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
-from uuid import UUID
-from .moduleSchema import ModuleCreate, ModuleResponse
+from datetime import datetime
 
 class CourseBase(BaseModel):
-    title: str
+    coursename: str 
     description: Optional[str] = None
-    category: Optional[str] = None
-
-class CourseCreate(CourseBase):
-    modules: Optional[List[ModuleCreate]] = []
+    duration: int 
+    instructor_id: int 
 
 class CourseUpdate(BaseModel):
-    title: Optional[str] = None
+    coursename: Optional[str] = None
     description: Optional[str] = None
-    category: Optional[str] = None
-    modules: Optional[List[ModuleCreate]] = None
-    
-class CourseResponse(BaseModel):
-    course_id: UUID
-    modules: List[ModuleResponse] = []
+    duration: Optional[int] = None
+
+class ModuleInCourse(BaseModel):
+    id: int
+    modulename: str
+    description: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+class CourseResponse(CourseBase):
+    id: int
+    created_on: datetime
+    updated_on: datetime
+    modules: List[ModuleInCourse] = []
     class Config:
         from_attributes = True

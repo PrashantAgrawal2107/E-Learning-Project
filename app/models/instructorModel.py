@@ -7,4 +7,4 @@ class Instructor(Base, IDMixin, TimestampMixin):
     name = Column(String(100), nullable=False)
     email = Column(String(120), unique=True, nullable=False, index=True)
     password = Column(String(255), nullable=False)
-    courses = relationship("Course", back_populates="instructor")
+    courses = relationship("Course", back_populates="instructor" , cascade='all, delete-orphan')
