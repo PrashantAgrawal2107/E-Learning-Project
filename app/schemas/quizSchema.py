@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from uuid import UUID
-from .questionSchema import QuestionCreate, QuestionOut
+from .questionSchema import QuestionCreate, QuestionReponse
 
 class QuizBase(BaseModel):
     title: str
@@ -15,9 +15,9 @@ class QuizUpdate(BaseModel):
     description: Optional[str] = None
     questions: Optional[List[QuestionCreate]] = None
     
-class QuizOut(QuizBase):
+class QuizResponse(QuizBase):
     quiz_id: UUID
-    questions: List[QuestionOut]
+    questions: List[QuestionReponse]
     class Config:
         from_attributes = True
 

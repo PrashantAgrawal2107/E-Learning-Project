@@ -4,17 +4,12 @@ from datetime import datetime
 
 # ---- Base schema ----
 class StudentBase(BaseModel):
-    name: str = Field(..., max_length=100, description="Full name of the student")
-    email: EmailStr = Field(..., description="Unique email address of the student")
+    name: str
+    email: str
+    password: str
 
     class Config:
         from_attributes = True 
-
-
-# ---- Create schema ----
-class StudentCreate(StudentBase):
-    password: str = Field(..., min_length=6, description="Password for account")
-
 
 # ---- Update schema ----
 class StudentUpdate(BaseModel):
@@ -27,10 +22,10 @@ class StudentUpdate(BaseModel):
 
 
 # ---- Response schema ----
-class StudentResponse(StudentBase):
+class StudentResponse(BaseModel):
     id: int
-    created_at: datetime
-    updated_at: datetime
+    name: str
+    email: str
 
     class Config:
         from_attributes = True

@@ -15,7 +15,7 @@ class EnrollmentCreate(EnrollmentBase):
 class EnrollmentUpdate(BaseModel):
     progress: Optional[float] = None
     
-class EnrollmentOut(EnrollmentBase):
+class EnrollmentResponse(EnrollmentBase):
     enrollment_id: UUID
     class Config:
         from_attributes = True

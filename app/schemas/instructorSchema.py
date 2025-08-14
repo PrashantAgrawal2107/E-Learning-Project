@@ -1,23 +1,33 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr , Field
 from typing import Optional, List
 from uuid import UUID
-from .courseSchema import CourseOut
+from .courseSchema import CourseResponse
 
+# ---- Base schema ----
 class InstructorBase(BaseModel):
-    first_name: str
-    last_name: str
-    email: EmailStr
+    name: str
+    email: str
+    password: str
 
-class InstructorCreate(InstructorBase):
-    pass
+    class Config:
+        from_attributes = True 
 
-class InstructorUpdate(BaseModel):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
+# ---- Update schema ----
+class   InstructorUpdate(BaseModel):
+    name: Optional[str] = Field(None, max_length=100)
     email: Optional[EmailStr] = None
-    
-class InstructorOut(InstructorBase):
-    instructor_id: UUID
-    courses: List[CourseOut] = []
+    password: Optional[str] = Field(None, min_length=6)
+
+    class Config:
+        from_attributes = True
+
+
+# ---- Response schema ----
+class InstructorResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+    courses: List[CourseResponse] = []
+
     class Config:
         from_attributes = True

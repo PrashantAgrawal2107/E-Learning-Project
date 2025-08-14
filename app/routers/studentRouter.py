@@ -7,7 +7,7 @@ from ..services import studentServices
 router = APIRouter(prefix="/students", tags=["Students"])
 
 @router.post("/", response_model=studentSchema.StudentResponse)
-def create_student(student: studentSchema.StudentCreate, db: Session = Depends(get_db)):
+def create_student(student: studentSchema.StudentBase, db: Session = Depends(get_db)):
     return studentServices.create_student(student, db)
 
 @router.get("/", response_model=list[studentSchema.StudentResponse])
@@ -20,6 +20,10 @@ def get_student(student_id: int, db: Session = Depends(get_db)):
     if not student:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
     return student
+
+@router.put("/{student_id}", response_model=studentSchema.StudentResponse)
+def update_student(student_id: int, updated_student: studentSchema.StudentUpdate, db: Session = Depends(get_db)):
+    return studentServices.update_student(student_id, updated_student, db)
 
 @router.delete("/{student_id}")
 def delete_student(student_id: int, db: Session = Depends(get_db)):

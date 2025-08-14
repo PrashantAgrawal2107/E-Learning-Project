@@ -13,7 +13,7 @@ class OptionUpdate(BaseModel):
     text: Optional[str] = None
     is_correct: Optional[bool] = None
     
-class OptionOut(OptionBase):
+class OptionResponse(OptionBase):
     option_id: UUID
     class Config:
         from_attributes = True

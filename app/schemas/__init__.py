@@ -1,8 +1,8 @@
-from .studentSchema import StudentCreate, StudentUpdate, StudentResponse
-from .instructorSchema import InstructorCreate, InstructorUpdate, InstructorOut
-from .courseSchema import CourseCreate, CourseUpdate, CourseOut
-from .moduleSchema import ModuleCreate, ModuleUpdate, ModuleOut
-from .quizSchema import QuizCreate, QuizUpdate, QuizOut
-from .questionSchema import QuestionCreate, QuestionUpdate, QuestionOut
-from .optionSchema import OptionCreate, OptionUpdate, OptionOut
-from .enrollmentSchema import EnrollmentCreate, EnrollmentUpdate, EnrollmentOut
+from .studentSchema import StudentBase, StudentUpdate, StudentResponse
+from .instructorSchema import InstructorBase, InstructorUpdate, InstructorResponse
+from .courseSchema import CourseBase, CourseUpdate, CourseResponse
+from .moduleSchema import ModuleBase, ModuleUpdate, ModuleResponse
+from .quizSchema import QuizBase, QuizUpdate, QuizResponse
+from .questionSchema import QuestionBase, QuestionUpdate, QuestionReponse
+from .optionSchema import OptionBase, OptionUpdate, OptionResponse
+from .enrollmentSchema import EnrollmentBase, EnrollmentUpdate, EnrollmentResponse

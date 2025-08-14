@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from uuid import UUID
-from .moduleSchema import ModuleCreate, ModuleOut
+from .moduleSchema import ModuleCreate, ModuleResponse
 
 class CourseBase(BaseModel):
     title: str
@@ -17,8 +17,8 @@ class CourseUpdate(BaseModel):
     category: Optional[str] = None
     modules: Optional[List[ModuleCreate]] = None
     
-class CourseOut(CourseBase):
+class CourseResponse(BaseModel):
     course_id: UUID
-    modules: List[ModuleOut] = []
+    modules: List[ModuleResponse] = []
     class Config:
         from_attributes = True
