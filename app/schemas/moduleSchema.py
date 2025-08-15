@@ -4,12 +4,10 @@ from uuid import UUID
 from .quizSchema import QuizCreate, QuizResponse
 
 class ModuleBase(BaseModel):
-    title: str
+    name: str
+    duration: int
     description: Optional[str] = None
     content_url: Optional[str] = None  # PDF, video, text
-
-class ModuleCreate(ModuleBase):
-    quizzes: Optional[List[QuizCreate]] = []
 
 class ModuleUpdate(BaseModel):
     title: Optional[str] = None
@@ -18,7 +16,8 @@ class ModuleUpdate(BaseModel):
     quizzes: Optional[List[QuizCreate]] = None
     
 class ModuleResponse(ModuleBase):
-    module_id: UUID
+    id: int
+    title: str
     quizzes: List[QuizResponse] = []
     class Config:
         from_attributes = True

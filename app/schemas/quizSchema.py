@@ -16,7 +16,7 @@ class QuizUpdate(BaseModel):
     questions: Optional[List[QuestionCreate]] = None
     
 class QuizResponse(QuizBase):
-    quiz_id: UUID
+    id: int 
     questions: List[QuestionReponse]
     class Config:
         from_attributes = True

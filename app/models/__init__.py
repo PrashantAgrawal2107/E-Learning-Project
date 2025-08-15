@@ -5,7 +5,6 @@ from .courseModel import Course
 from .enrollmentModel import Enrollment
 from .moduleModel import Module
 from .quizModel import Quiz
-from .quizAssignModel import QuizAssign
 from .questionModel import Question
 from .optionModel import Option
 from .attemptAnswerModel import AttemptAnswer
