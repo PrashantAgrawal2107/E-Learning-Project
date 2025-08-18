@@ -4,7 +4,7 @@ from ..models import enrollmentModel , studentModel , courseModel
 from ..schemas import enrollmentSchema
 from datetime import datetime, timezone
 
-# ---------------- CREATE ----------------
+
 def create_enrollment(enrollment: enrollmentSchema.EnrollmentBase, db: Session):
     student = db.query(studentModel.Student).filter(studentModel.Student.id == enrollment.student_id).first()
     if not student:
@@ -24,6 +24,7 @@ def create_enrollment(enrollment: enrollmentSchema.EnrollmentBase, db: Session):
         enrollmentModel.Enrollment.student_id == enrollment.student_id,
         enrollmentModel.Enrollment.course_id == enrollment.course_id
     ).first()
+
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -40,11 +41,10 @@ def create_enrollment(enrollment: enrollmentSchema.EnrollmentBase, db: Session):
     db.refresh(db_enrollment)
     return db_enrollment
 
-# ---------------- GET ALL ----------------
+
 def get_all_enrollments(db: Session):
     return db.query(enrollmentModel.Enrollment).all()
 
-# ---------------- GET BY ID ----------------
 def get_enrollment_by_id(enrollment_id: int, db: Session):
     enrollment = db.query(enrollmentModel.Enrollment).filter(enrollmentModel.Enrollment.id == enrollment_id).first()
     if not enrollment:
@@ -54,7 +54,7 @@ def get_enrollment_by_id(enrollment_id: int, db: Session):
         )
     return enrollment
 
-# ---------------- DELETE ----------------
+
 def delete_enrollment(enrollment_id: int, db: Session):
     enrollment = db.query(enrollmentModel.Enrollment).filter(enrollmentModel.Enrollment.id == enrollment_id).first()
     if not enrollment:
@@ -67,7 +67,7 @@ def delete_enrollment(enrollment_id: int, db: Session):
     db.commit()
     return {"message": "Enrollment deleted successfully"}
 
-# ---------------- NEW: Get courses by student ----------------
+
 def get_courses_by_student(student_id: int, db: Session):
     student = db.query(studentModel.Student).filter(studentModel.Student.id == student_id).first()
     if not student:
@@ -77,10 +77,10 @@ def get_courses_by_student(student_id: int, db: Session):
         )
     
     enrollments = db.query(enrollmentModel.Enrollment).filter(enrollmentModel.Enrollment.student_id == student_id).all()
-    courses = [enrollment.course for enrollment in enrollments]  # direct relation se fetch
+    courses = [enrollment.course for enrollment in enrollments] 
     return courses
 
-# # ---------------- NEW: Get students by course ----------------
+
 def get_students_by_course(course_id: int, db: Session):
     course = db.query(courseModel.Course).filter(courseModel.Course.id == course_id).first()
     if not course:

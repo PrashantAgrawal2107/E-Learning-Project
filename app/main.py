@@ -13,7 +13,7 @@ engine = create_engine(
 )
 Base.metadata.create_all(engine)
 
-app.include_router(authentication.router)
+# app.include_router(authentication.router)
 app.include_router(instructorRouter.router)
 app.include_router(studentRouter.router)
 app.include_router(courseRouter.router)

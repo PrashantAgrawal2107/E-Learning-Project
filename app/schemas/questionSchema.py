@@ -14,7 +14,7 @@ class QuestionUpdate(BaseModel):
     
 class QuestionResponse(QuestionBase):
     id: int
-    content: int
+    # content: int   // Ye error tha jisne dimaag kharaab kar diya bhaiiiiiii
     options: List[OptionResponse]
     class Config:
         from_attributes = True

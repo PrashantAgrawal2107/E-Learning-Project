@@ -5,7 +5,7 @@ from ..auth.hashing import Hash
 from datetime import datetime
 
 def create_student(student: schemas.StudentBase, db: Session):
-    # Duplicate email check
+    
     existing_student = db.query(models.Student).filter(models.Student.email == student.email).first()
     if existing_student:
         raise HTTPException(
@@ -13,10 +13,9 @@ def create_student(student: schemas.StudentBase, db: Session):
             detail="Email already registered"
         )
     
-    # Password hashing
+   
     hashed_password = Hash.bcrypt(student.password)
 
-    # Create student object (timestamps handled by mixin automatically if in model)
     db_student = models.Student(
         name=student.name,
         email=student.email,
@@ -27,6 +26,7 @@ def create_student(student: schemas.StudentBase, db: Session):
     db.commit()
     db.refresh(db_student)
     return db_student
+
 def get_all_students(db: Session):
     return db.query(models.Student).all()
 
@@ -41,7 +41,7 @@ def update_student(student_id: int, updated_student: schemas.StudentUpdate, db: 
     if not student:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
     
-    # Duplicate email check
+    
     existing_student = db.query(models.Student).filter(models.Student.email == updated_student.email).first()
     if existing_student:
         raise HTTPException(
@@ -49,7 +49,7 @@ def update_student(student_id: int, updated_student: schemas.StudentUpdate, db: 
             detail="Email already registered"
         )
     
-    # If password is being updated, hash it
+  
     update_data = updated_student.model_dump(exclude_unset=True)
     if "password" in update_data:
         update_data["password"] = Hash.bcrypt(update_data["password"])

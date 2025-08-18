@@ -5,7 +5,7 @@ from ..schemas import attemptSchema, attemptAnswerSchema
 
 
 def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate):
-    # Validate student
+   
     student = db.query(studentModel.Student).filter(studentModel.Student.id == attempt_data.student_id).first()
     if not student:
         raise HTTPException(
@@ -13,7 +13,7 @@ def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate):
             detail=f"Student with id {attempt_data.student_id} not found"
         )
 
-    # Validate quiz
+    
     quiz = db.query(quizModel.Quiz).filter(quizModel.Quiz.id == attempt_data.quiz_id).first()
     if not quiz:
         raise HTTPException(
@@ -21,7 +21,7 @@ def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate):
             detail=f"Quiz with id {attempt_data.quiz_id} not found"
         )
 
-    # Create attempt
+    
     attempt = attemptModel.Attempt(
         student_id=attempt_data.student_id,
         quiz_id=attempt_data.quiz_id,
@@ -31,7 +31,6 @@ def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate):
     db.commit()
     db.refresh(attempt)
 
-    # Save attempt answers if provided
     if hasattr(attempt_data, "answers") and attempt_data.answers:
         for ans in attempt_data.answers:
             answer = attemptAnswerModel.AttemptAnswer(

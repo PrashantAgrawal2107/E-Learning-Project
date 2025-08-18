@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from ..auth.hashing import Hash
 
 def create_instructor(instructor: schemas.InstructorBase, db: Session):
-    # Duplicate email check
+    
     existing_instructor = db.query(models.Instructor).filter(models.Instructor.email == instructor.email).first()
     if existing_instructor:
         raise HTTPException(
@@ -12,10 +12,10 @@ def create_instructor(instructor: schemas.InstructorBase, db: Session):
             detail="Email already registered"
         )
     
-    # Password hashing
+   
     hashed_password = Hash.bcrypt(instructor.password)
 
-    # Create instructor object (timestamps handled by mixin automatically if in model)
+    
     db_instructor = models.Instructor(
         name=instructor.name,
         email=instructor.email,
@@ -41,7 +41,7 @@ def update_instructor(instructor_id: int, updated_instructor: schemas.Instructor
     if not instructor:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Instructor not found")
     
-    # Duplicate email check
+    
     existing_instructor = db.query(models.Instructor).filter(models.Instructor.email == updated_instructor.email).first()
     if existing_instructor:
         raise HTTPException(
@@ -49,7 +49,6 @@ def update_instructor(instructor_id: int, updated_instructor: schemas.Instructor
             detail="Email already registered"
         )
     
-    # If password is being updated, hash it
     update_data = updated_instructor.model_dump(exclude_unset=True)
     if "password" in update_data:
         update_data["password"] = Hash.bcrypt(update_data["password"])

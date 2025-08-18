@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 from .. import models, schemas
 
 
-# Create a new module
+
 def create_module(module: schemas.ModuleBase, db: Session):
-    # Check if course exists (foreign key constraint safety)
+    
     course = db.query(models.Course).filter(models.Course.id == module.course_id).first()
     if not course:
         raise HTTPException(
@@ -26,13 +26,11 @@ def create_module(module: schemas.ModuleBase, db: Session):
     return new_module
 
 
-# Get all modules
 def get_all_modules(db: Session):
     modules = db.query(models.Module).all()
     return modules
 
 
-# Get module by ID
 def get_module_by_id(module_id: int, db: Session):
     module = db.query(models.Module).filter(models.Module.id == module_id).first()
     if not module:
@@ -43,7 +41,6 @@ def get_module_by_id(module_id: int, db: Session):
     return module
 
 
-# Update module
 def update_module(module_id: int, updated_module: schemas.ModuleUpdate, db: Session):
     module = db.query(models.Module).filter(models.Module.id == module_id).first()
     if not module:
@@ -61,7 +58,6 @@ def update_module(module_id: int, updated_module: schemas.ModuleUpdate, db: Sess
     return module
 
 
-# Delete module
 def delete_module(module_id: int, db: Session):
     module = db.query(models.Module).filter(models.Module.id == module_id).first()
     if not module:
@@ -74,7 +70,6 @@ def delete_module(module_id: int, db: Session):
     return {"message": f"Module with id {module_id} deleted successfully"}
 
 
-# Get modules by Course ID (extra useful API)
 def get_modules_by_course(course_id: int, db: Session):
     course = db.query(models.Course).filter(models.Course.id == course_id).first()
     if not course:

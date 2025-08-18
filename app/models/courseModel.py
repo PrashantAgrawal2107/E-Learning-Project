@@ -5,9 +5,9 @@ from .base import Base, IDMixin, TimestampMixin
 class Course(Base, IDMixin, TimestampMixin):
     __tablename__ = "courses"
 
-    name = Column(String(200), nullable=False)   # consistent naam
+    name = Column(String(200), nullable=False)  
     description = Column(Text, nullable=True)
-    duration = Column(Integer, nullable=False)   # in hours
+    duration = Column(Integer, nullable=False) 
 
     instructor_id = Column(
         Integer,

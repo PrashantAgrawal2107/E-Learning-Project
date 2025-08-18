@@ -4,7 +4,6 @@ from uuid import UUID
 from .courseSchema import CourseResponse
 from datetime import datetime
 
-# ---- Base schema ----
 class InstructorBase(BaseModel):
     name: str
     email: str
@@ -13,7 +12,6 @@ class InstructorBase(BaseModel):
     class Config:
         from_attributes = True 
 
-# ---- Update schema ----
 class   InstructorUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=100)
     email: Optional[EmailStr] = None
@@ -22,12 +20,11 @@ class   InstructorUpdate(BaseModel):
     class Config:
         from_attributes = True
 
-
-# ---- Response schema ----
 class InstructorResponse(BaseModel):
     id: int
     name: str
     email: str
+    role: str
     created_on: datetime
     updated_on: datetime
     courses: List[CourseResponse] = []

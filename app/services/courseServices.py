@@ -3,13 +3,14 @@ from .. import models, schemas
 from fastapi import HTTPException, status
 
 def create_course(course: schemas.CourseBase, db: Session):
-    # Validate instructor exists
+    
     instructor = db.query(models.Instructor).filter(models.Instructor.id == course.instructor_id).first()
     if not instructor:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Instructor with id {course.instructor_id} does not exist"
         )
+    
     db_course = models.Course(**course.model_dump())
     db.add(db_course)
     db.commit()

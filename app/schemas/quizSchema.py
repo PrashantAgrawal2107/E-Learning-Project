@@ -8,6 +8,7 @@ class QuizBase(BaseModel):
 
 class QuizCreate(QuizBase):
     questions: List[QuestionCreate]
+    # pass
 
 class QuizUpdate(BaseModel):
     name: Optional[str] = None

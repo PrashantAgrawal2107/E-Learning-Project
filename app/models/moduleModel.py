@@ -14,5 +14,4 @@ class Module(Base, IDMixin, TimestampMixin):
     course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
     course = relationship("Course", back_populates="modules")
 
-    # New relation -> module has many quizzes
     quizzes = relationship("Quiz", back_populates="module", cascade="all, delete-orphan")

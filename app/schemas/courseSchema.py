@@ -3,7 +3,7 @@ from typing import Optional, List
 from datetime import datetime
 
 class CourseBase(BaseModel):
-    name: str   # updated for consistency
+    name: str   
     description: Optional[str] = None
     duration: int 
     instructor_id: int 
@@ -15,7 +15,7 @@ class CourseUpdate(BaseModel):
 
 class ModuleInCourse(BaseModel):
     id: int
-    name: str   # modulename → name
+    name: str   
     description: Optional[str]
 
     class Config:
