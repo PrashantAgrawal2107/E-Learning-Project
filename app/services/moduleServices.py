@@ -1,53 +1,85 @@
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from .. import models, schemas
-from fastapi import HTTPException, status
 
+
+# Create a new module
 def create_module(module: schemas.ModuleBase, db: Session):
-    # Validate instructor exists
-    instructor = db.query(models.Instructor).filter(models.Instructor.id == module.instructor_id).first()
-    if not instructor:
+    # Check if course exists (foreign key constraint safety)
+    course = db.query(models.Course).filter(models.Course.id == module.course_id).first()
+    if not course:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Instructor with id {module.instructor_id} does not exist"
+            detail=f"Course with id {module.course_id} not found"
         )
-    db_module = models.Module(**module.model_dump())
-    db.add(db_module)
+
+    new_module = models.Module(
+        name=module.name,
+        duration=module.duration,
+        description=module.description,
+        content_url=module.content_url,
+        course_id=module.course_id
+    )
+    db.add(new_module)
     db.commit()
-    db.refresh(db_module)
-    return db_module
+    db.refresh(new_module)
+    return new_module
 
+
+# Get all modules
 def get_all_modules(db: Session):
-    return db.query(models.Module).all()
+    modules = db.query(models.Module).all()
+    return modules
 
+
+# Get module by ID
 def get_module_by_id(module_id: int, db: Session):
     module = db.query(models.Module).filter(models.Module.id == module_id).first()
     if not module:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="module not found"
+            detail=f"Module with id {module_id} not found"
         )
     return module
 
+
+# Update module
 def update_module(module_id: int, updated_module: schemas.ModuleUpdate, db: Session):
     module = db.query(models.Module).filter(models.Module.id == module_id).first()
     if not module:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="module not found"
+            detail=f"Module with id {module_id} not found"
         )
-    for key, value in updated_module.model_dump(exclude_unset=True).items():
+
+    update_data = updated_module.dict(exclude_unset=True)
+    for key, value in update_data.items():
         setattr(module, key, value)
+
     db.commit()
     db.refresh(module)
     return module
 
+
+# Delete module
 def delete_module(module_id: int, db: Session):
     module = db.query(models.Module).filter(models.Module.id == module_id).first()
     if not module:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="module not found"
+            detail=f"Module with id {module_id} not found"
         )
     db.delete(module)
     db.commit()
-    return {"message": "module deleted successfully"}
+    return {"message": f"Module with id {module_id} deleted successfully"}
+
+
+# Get modules by Course ID (extra useful API)
+def get_modules_by_course(course_id: int, db: Session):
+    course = db.query(models.Course).filter(models.Course.id == course_id).first()
+    if not course:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Course with id {course_id} not found"
+        )
+    return course.modules

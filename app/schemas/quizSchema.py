@@ -1,31 +1,21 @@
 from pydantic import BaseModel
 from typing import Optional, List
-from uuid import UUID
-from .questionSchema import QuestionCreate, QuestionReponse
+from .questionSchema import QuestionCreate, QuestionResponse
 
 class QuizBase(BaseModel):
-    title: str
+    name: str
     description: Optional[str] = None
 
 class QuizCreate(QuizBase):
     questions: List[QuestionCreate]
 
 class QuizUpdate(BaseModel):
-    title: Optional[str] = None
+    name: Optional[str] = None
     description: Optional[str] = None
     questions: Optional[List[QuestionCreate]] = None
     
 class QuizResponse(QuizBase):
     id: int 
-    questions: List[QuestionReponse]
+    questions: List[QuestionResponse]
     class Config:
         from_attributes = True
-
-
-
-
-
-
-
-
-

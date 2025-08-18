@@ -4,11 +4,33 @@ from .base import Base, IDMixin, TimestampMixin
 
 class Course(Base, IDMixin, TimestampMixin):
     __tablename__ = "courses"
-    coursename = Column(String(200), nullable=False)
+
+    name = Column(String(200), nullable=False)   # consistent naam
     description = Column(Text, nullable=True)
-    duration = Column(Integer, nullable=False)  # in hours
-    instructor_id = Column(Integer, ForeignKey("instructors.id" , ondelete='CASCADE'), nullable=False)
-    instructor = relationship("Instructor", back_populates="courses", passive_deletes=True)
-    modules = relationship("Module", back_populates="course")
-    enrollments = relationship("Enrollment", back_populates="course")
-    assigned_quizzes = relationship("QuizAssign", back_populates="course")
+    duration = Column(Integer, nullable=False)   # in hours
+
+    instructor_id = Column(
+        Integer,
+        ForeignKey("instructors.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    instructor = relationship(
+        "Instructor",
+        back_populates="courses",
+        passive_deletes=True
+    )
+
+    modules = relationship(
+        "Module",
+        back_populates="course",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+
+    enrollments = relationship(
+        "Enrollment",
+        back_populates="course",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )

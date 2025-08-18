@@ -1,23 +1,38 @@
 from pydantic import BaseModel
-from typing import Optional, List
-from uuid import UUID
-from .quizSchema import QuizCreate, QuizResponse
+from typing import Optional
+from datetime import datetime
+
 
 class ModuleBase(BaseModel):
     name: str
     duration: int
     description: Optional[str] = None
-    content_url: Optional[str] = None  # PDF, video, text
+    content_url: Optional[str] = None
+    course_id: int
+
+    class Config:
+        from_attributes = True
+
 
 class ModuleUpdate(BaseModel):
-    title: Optional[str] = None
+    name: Optional[str] = None
+    duration: Optional[int] = None
     description: Optional[str] = None
     content_url: Optional[str] = None
-    quizzes: Optional[List[QuizCreate]] = None
-    
-class ModuleResponse(ModuleBase):
+
+    class Config:
+        from_attributes = True
+
+
+class ModuleResponse(BaseModel):
     id: int
-    title: str
-    quizzes: List[QuizResponse] = []
+    name: str
+    duration: int
+    description: Optional[str] = None
+    content_url: Optional[str] = None
+    course_id: int
+    created_on: datetime
+    updated_on: datetime
+
     class Config:
         from_attributes = True

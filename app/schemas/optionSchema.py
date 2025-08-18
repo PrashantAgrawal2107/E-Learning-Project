@@ -1,19 +1,20 @@
 from pydantic import BaseModel
 from typing import Optional
-from uuid import UUID
 
 class OptionBase(BaseModel):
-    text: str
+    id: int
+    description: Optional[str] = None
     is_correct: bool
+    question_id: int  # Assuming this is the foreign key to the Question model
 
-class OptionCreate(OptionBase):
-    pass
+class OptionCreate(BaseModel):
+    description: str
+    is_correct: bool = False  # Default to False, backend can recalculate if needed
 
 class OptionUpdate(BaseModel):
-    text: Optional[str] = None
+    description: Optional[str] = None
     is_correct: Optional[bool] = None
     
 class OptionResponse(OptionBase):
-    option_id: UUID
     class Config:
         from_attributes = True

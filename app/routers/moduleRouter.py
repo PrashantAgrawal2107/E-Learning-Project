@@ -6,7 +6,7 @@ from ..services import moduleServices as services
 
 router = APIRouter(
     prefix="/modules",
-    tags=["modules"]
+    tags=["Modules"]
 )
 
 @router.post("/", response_model=schemas.ModuleResponse)
@@ -28,3 +28,7 @@ def update_module(module_id: int, updated_module: schemas.ModuleUpdate, db: Sess
 @router.delete("/{module_id}")
 def delete_module(module_id: int, db: Session = Depends(get_db)):
     return services.delete_module(module_id, db)
+
+@router.get("/course/{course_id}", response_model=list[schemas.ModuleResponse])
+def get_modules_by_course(course_id: int, db: Session = Depends(get_db)):
+    return services.get_modules_by_course(course_id, db)
