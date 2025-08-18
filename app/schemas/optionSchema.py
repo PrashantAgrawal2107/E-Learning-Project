@@ -16,6 +16,7 @@ class OptionUpdate(BaseModel):
     is_correct: Optional[bool] = None
     
 class OptionResponse(BaseModel):
+    id: int
     description: str
     is_correct: bool
     class Config:

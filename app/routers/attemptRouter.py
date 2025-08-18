@@ -7,7 +7,7 @@ from ..services import attemptServices
 router = APIRouter(prefix="/attempts", tags=["Attempts"])
 
 
-@router.post("/", response_model=attemptSchema.AttemptResponse)
+@router.post("/")
 def create_attempt(attempt: attemptSchema.AttemptCreate, db: Session = Depends(get_db)):
     return attemptServices.create_attempt(db, attempt)
 

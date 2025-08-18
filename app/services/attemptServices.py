@@ -1,11 +1,11 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from ..models import attemptModel, attemptAnswerModel, quizModel, studentModel
+from ..models import attemptModel, attemptAnswerModel, quizModel, optionModel, studentModel
 from ..schemas import attemptSchema, attemptAnswerSchema
 
 
 def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate):
-   
+    
     student = db.query(studentModel.Student).filter(studentModel.Student.id == attempt_data.student_id).first()
     if not student:
         raise HTTPException(
@@ -13,7 +13,6 @@ def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate):
             detail=f"Student with id {attempt_data.student_id} not found"
         )
 
-    
     quiz = db.query(quizModel.Quiz).filter(quizModel.Quiz.id == attempt_data.quiz_id).first()
     if not quiz:
         raise HTTPException(
@@ -21,28 +20,69 @@ def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate):
             detail=f"Quiz with id {attempt_data.quiz_id} not found"
         )
 
-    
     attempt = attemptModel.Attempt(
         student_id=attempt_data.student_id,
         quiz_id=attempt_data.quiz_id,
-        score=attempt_data.score
+        score=0
     )
     db.add(attempt)
     db.commit()
     db.refresh(attempt)
 
+    total_score = 0
+
     if hasattr(attempt_data, "answers") and attempt_data.answers:
         for ans in attempt_data.answers:
+            selected_option = (
+                db.query(optionModel.Option)
+                .filter(
+                    optionModel.Option.id == ans.selected_option_id,
+                    optionModel.Option.question_id == ans.question_id
+                )
+                .first()
+            )
+
+            if not selected_option:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid selected option {ans.selected_option_id} for question {ans.question_id}"
+                )
+
+            correct_option = (
+                db.query(optionModel.Option)
+                .filter(
+                    optionModel.Option.question_id == ans.question_id,
+                    optionModel.Option.is_correct == True
+                )
+                .first()
+            )
+
+            if not correct_option:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"No correct option found for question {ans.question_id}"
+                )
+
+            is_correct = ans.selected_option_id == correct_option.id
+
+            if is_correct:
+                total_score += 1 
+
             answer = attemptAnswerModel.AttemptAnswer(
                 attempt_id=attempt.id,
                 question_id=ans.question_id,
                 selected_option_id=ans.selected_option_id,
-                is_correct=ans.is_correct
+                is_correct=is_correct
             )
             db.add(answer)
+
+
         db.commit()
 
+    attempt.score = total_score
+    db.commit()
     db.refresh(attempt)
+
     return attempt
 
 

@@ -8,7 +8,9 @@ class AttemptBase(BaseModel):
     student_id: int
     score: Optional[int] = 0
 
-class AttemptCreate(AttemptBase):
+class AttemptCreate(BaseModel):
+    quiz_id: int
+    student_id: int
     answers: List[AttemptAnswerCreate]
 
 class AttemptUpdate(BaseModel):
