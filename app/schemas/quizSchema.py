@@ -13,10 +13,10 @@ class QuizCreate(QuizBase):
 class QuizUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
-    questions: Optional[List[QuestionCreate]] = None
     
 class QuizResponse(QuizBase):
     id: int 
+    module_id: int
     questions: List[QuestionResponse]
     class Config:
         from_attributes = True

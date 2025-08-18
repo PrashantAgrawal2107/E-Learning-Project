@@ -96,8 +96,8 @@ def update_quiz(db: Session, quiz_id: int, quiz_data: QuizUpdate):
     if not quiz:
         return None
 
-    if quiz_data.title is not None:
-        quiz.title = quiz_data.title
+    if quiz_data.name is not None:
+        quiz.name = quiz_data.name
     if quiz_data.description is not None:
         quiz.description = quiz_data.description
 

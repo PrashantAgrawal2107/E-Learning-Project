@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 
@@ -23,14 +23,18 @@ class ModuleUpdate(BaseModel):
     class Config:
         from_attributes = True
 
-
-class ModuleResponse(BaseModel):
+class QuizInModule(BaseModel):
     id: int
     name: str
-    duration: int
     description: Optional[str] = None
-    content_url: Optional[str] = None
-    course_id: int
+
+    class Config:
+        from_attributes = True
+
+
+class ModuleResponse(ModuleBase):
+    id: int
+    quizzes: List[QuizInModule] = []
     created_on: datetime
     updated_on: datetime
 
