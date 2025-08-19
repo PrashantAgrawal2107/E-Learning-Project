@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from .. import models, schemas
 from fastapi import HTTPException, status
 from ..auth.hashing import Hash
+from ..models.instructorModel import Instructor
 
 def create_instructor(instructor: schemas.InstructorBase, db: Session):
     
@@ -36,11 +37,16 @@ def get_instructor_by_id(instructor_id: int, db: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Instructor not found")
     return instructor
 
-def update_instructor(instructor_id: int, updated_instructor: schemas.InstructorUpdate, db: Session):
+def update_instructor(instructor_id: int, updated_instructor: schemas.InstructorUpdate, db: Session, current_user: Instructor):
     instructor = db.query(models.Instructor).filter(models.Instructor.id == instructor_id).first()
     if not instructor:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Instructor not found")
     
+    if instructor.id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to update this instrutor's profile"
+        )
     
     existing_instructor = db.query(models.Instructor).filter(models.Instructor.email == updated_instructor.email).first()
     if existing_instructor:
@@ -63,10 +69,16 @@ def update_instructor(instructor_id: int, updated_instructor: schemas.Instructor
     db.refresh(instructor)
     return instructor
 
-def delete_instructor(instructor_id: int, db: Session):
+def delete_instructor(instructor_id: int, db: Session, current_user: Instructor):
     instructor = db.query(models.Instructor).filter(models.Instructor.id == instructor_id).first()
     if not instructor:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Instructor not found")
+    
+    if instructor.id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to delete this instrutor's profile"
+        )
     
     db.delete(instructor)
     db.commit()

@@ -11,14 +11,12 @@ from ..models.instructorModel import Instructor
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# ---- Password utils ----
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
-# ---- User retrieval/auth ----
 def get_user_by_email(db: Session, email: str, role: str):
     if role == "student":
         return db.query(Student).filter(Student.email == email).first()
@@ -34,7 +32,6 @@ def authenticate_user(db: Session, email: str, password: str, role: str):
         return None
     return user
 
-# ---- Dependencies for routes ----
 def get_current_user(
     db: Session = Depends(get_db),
     token: str = Depends(get_token),
@@ -49,9 +46,11 @@ def get_current_user(
             detail="Invalid token payload",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-    # 🔑 role bhi bhejna hoga get_user_by_email me
+    
+    print(email)
+    print(role)
     user = get_user_by_email(db, email, role)
+    print(user)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -62,12 +61,6 @@ def get_current_user(
     return user
 
 def require_role(*allowed_roles: str):
-    """
-    Usage in route:
-      current_user: Student = Depends(require_role("instructor"))
-    OR apply at router level:
-      dependencies=[Depends(require_role("instructor"))]
-    """
     def _role_dependency(current_user: Student = Depends(get_current_user)) -> Student:
         if current_user.role not in allowed_roles:
             raise HTTPException(

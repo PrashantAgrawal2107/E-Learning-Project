@@ -1,4 +1,3 @@
-# app/schemas/authSchema.py
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from enum import Enum
@@ -19,9 +18,3 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     sub: EmailStr
     role: RoleEnum
-
-class RegisterRequest(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
-    role: Optional[RoleEnum] = "student"  # allow register as instructor too (if you want)
