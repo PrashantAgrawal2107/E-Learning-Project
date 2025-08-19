@@ -50,7 +50,7 @@ def get_current_user(
     print(email)
     print(role)
     user = get_user_by_email(db, email, role)
-    print(user)
+    
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -61,7 +61,7 @@ def get_current_user(
     return user
 
 def require_role(*allowed_roles: str):
-    def _role_dependency(current_user: Student = Depends(get_current_user)) -> Student:
+    def _role_dependency(current_user = Depends(get_current_user)):
         if current_user.role not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

@@ -5,7 +5,7 @@ from ..schemas import enrollmentSchema
 from datetime import datetime, timezone
 
 
-def create_enrollment(enrollment: enrollmentSchema.EnrollmentBase, db: Session):
+def create_enrollment(enrollment: enrollmentSchema.EnrollmentBase, db: Session, current_user):
     student = db.query(studentModel.Student).filter(studentModel.Student.id == enrollment.student_id).first()
     if not student:
         raise HTTPException(
@@ -18,6 +18,18 @@ def create_enrollment(enrollment: enrollmentSchema.EnrollmentBase, db: Session):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Course not found"
+        )
+    
+    if current_user.role == "student" and current_user.id != student.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to enroll other student in this course"
+        )
+    
+    if current_user.role == "instructor" and course.instructor_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to enroll students in this course"
         )
 
     existing = db.query(enrollmentModel.Enrollment).filter(
@@ -55,7 +67,7 @@ def get_enrollment_by_id(enrollment_id: int, db: Session):
     return enrollment
 
 
-def delete_enrollment(enrollment_id: int, db: Session):
+def delete_enrollment(enrollment_id: int, db: Session, current_user):
     enrollment = db.query(enrollmentModel.Enrollment).filter(enrollmentModel.Enrollment.id == enrollment_id).first()
     if not enrollment:
         raise HTTPException(
@@ -63,6 +75,21 @@ def delete_enrollment(enrollment_id: int, db: Session):
             detail="Enrollment not found"
         )
     
+    student = db.query(studentModel.Student).filter(studentModel.Student.id == enrollment.student_id).first()
+    course = db.query(courseModel.Course).filter(courseModel.Course.id == enrollment.course_id).first()
+
+    if current_user.role == "student" and current_user.id != student.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to delete this enrollment"
+        )
+    
+    if current_user.role == "instructor" and course.instructor_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to delete this enrollment"
+        )
+
     db.delete(enrollment)
     db.commit()
     return {"message": "Enrollment deleted successfully"}
