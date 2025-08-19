@@ -3,18 +3,20 @@ from sqlalchemy.orm import Session
 from ..core.dbConfig import get_db
 from ..schemas import attemptSchema
 from ..services import attemptServices
+from ..auth.oauth2 import get_current_user, require_role
+from ..models.studentModel import Student
 
 router = APIRouter(prefix="/attempts", tags=["Attempts"])
 
 
-@router.post("/")
-def create_attempt(attempt: attemptSchema.AttemptCreate, db: Session = Depends(get_db)):
-    return attemptServices.create_attempt(db, attempt)
+@router.post("/" ,  dependencies=[Depends(require_role("student"))])
+def create_attempt(attempt: attemptSchema.AttemptCreate, db: Session = Depends(get_db),  current_user: Student = Depends(get_current_user)):
+    return attemptServices.create_attempt(db, attempt, current_user)
 
 
-@router.delete("/{attempt_id}")
-def delete_attempt(attempt_id: int, db: Session = Depends(get_db)):
-    return attemptServices.delete_attempt(db, attempt_id)
+@router.delete("/{attempt_id}",  dependencies=[Depends(require_role("student"))])
+def delete_attempt(attempt_id: int, db: Session = Depends(get_db), current_user: Student = Depends(get_current_user)):
+    return attemptServices.delete_attempt(db, attempt_id, current_user)
 
 
 @router.get("/", response_model=list[attemptSchema.AttemptResponse])

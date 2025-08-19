@@ -2,15 +2,23 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from ..models import attemptModel, attemptAnswerModel, quizModel, optionModel, questionModel, studentModel
 from ..schemas import attemptSchema, attemptAnswerSchema
+from ..models.studentModel import Student
+from ..models.quizModel import Quiz
+from ..models import moduleModel, courseModel
 
-
-def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate):
+def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate, current_user: Student):
     
     student = db.query(studentModel.Student).filter(studentModel.Student.id == attempt_data.student_id).first()
     if not student:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Student with id {attempt_data.student_id} not found"
+        )
+    
+    if current_user.id != attempt_data.student_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not allowed to create an attempt for this student"
         )
 
     quiz = db.query(quizModel.Quiz).filter(quizModel.Quiz.id == attempt_data.quiz_id).first()
@@ -102,13 +110,20 @@ def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate):
     return attempt
 
 
-def delete_attempt(db: Session, attempt_id: int):
+def delete_attempt(db: Session, attempt_id: int, current_user: Student):
     attempt = db.query(attemptModel.Attempt).filter(attemptModel.Attempt.id == attempt_id).first()
     if not attempt:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Attempt with id {attempt_id} not found"
         )
+    
+    if attempt.student_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not allowed to delete this attempt"
+        )
+
     db.delete(attempt)
     db.commit()
     return {"message": f"Attempt {attempt_id} deleted successfully"}
