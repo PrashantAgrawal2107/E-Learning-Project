@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from ..core.dbConfig import get_db
 from ..schemas import studentSchema
 from ..services import studentServices
+from ..auth.oauth2 import require_role, get_current_user
+from ..models.studentModel import Student
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
@@ -21,10 +23,10 @@ def get_student(student_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
     return student
 
-@router.put("/{student_id}", response_model=studentSchema.StudentResponse)
-def update_student(student_id: int, updated_student: studentSchema.StudentUpdate, db: Session = Depends(get_db)):
-    return studentServices.update_student(student_id, updated_student, db)
+@router.put("/{student_id}", response_model=studentSchema.StudentResponse, dependencies=[Depends(require_role("student"))])
+def update_student(student_id: int, updated_student: studentSchema.StudentUpdate, db: Session = Depends(get_db), current_user: Student = Depends(get_current_user)):
+    return studentServices.update_student(student_id, updated_student, db, current_user)
 
-@router.delete("/{student_id}")
-def delete_student(student_id: int, db: Session = Depends(get_db)):
-    return studentServices.delete_student(student_id, db)
+@router.delete("/{student_id}", dependencies=[Depends(require_role("student"))])
+def delete_student(student_id: int, db: Session = Depends(get_db), current_user: Student = Depends(get_current_user)):
+    return studentServices.delete_student(student_id, db, current_user)

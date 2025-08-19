@@ -3,6 +3,7 @@ from .. import models, schemas
 from fastapi import HTTPException, status
 from ..auth.hashing import Hash
 from datetime import datetime
+from ..models.studentModel import Student
 
 def create_student(student: schemas.StudentBase, db: Session):
     
@@ -36,10 +37,16 @@ def get_student_by_id(student_id: int, db: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
     return student
 
-def update_student(student_id: int, updated_student: schemas.StudentUpdate, db: Session):
+def update_student(student_id: int, updated_student: schemas.StudentUpdate, db: Session, current_user : Student):
     student = db.query(models.Student).filter(models.Student.id == student_id).first()
     if not student:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
+    
+    if student.id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to update this student's profile"
+        )
     
     
     existing_student = db.query(models.Student).filter(models.Student.email == updated_student.email).first()
@@ -64,10 +71,16 @@ def update_student(student_id: int, updated_student: schemas.StudentUpdate, db: 
     db.refresh(student)
     return student
 
-def delete_student(student_id: int, db: Session):
+def delete_student(student_id: int, db: Session, current_user: Student):
     student = db.query(models.Student).filter(models.Student.id == student_id).first()
     if not student:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
+    
+    if student.id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to delete this student's profile"
+        )
     
     db.delete(student)
     db.commit()
