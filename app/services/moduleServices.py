@@ -1,16 +1,23 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from .. import models, schemas
+from ..models.instructorModel import Instructor
 
 
 
-def create_module(module: schemas.ModuleBase, db: Session):
+def create_module(module: schemas.ModuleBase, db: Session, current_user: Instructor):
     
     course = db.query(models.Course).filter(models.Course.id == module.course_id).first()
     if not course:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id {module.course_id} not found"
+        )
+    
+    if course.instructor_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to create modules for this course"
         )
 
     new_module = models.Module(
@@ -41,12 +48,18 @@ def get_module_by_id(module_id: int, db: Session):
     return module
 
 
-def update_module(module_id: int, updated_module: schemas.ModuleUpdate, db: Session):
+def update_module(module_id: int, updated_module: schemas.ModuleUpdate, db: Session, current_user: Instructor):
     module = db.query(models.Module).filter(models.Module.id == module_id).first()
     if not module:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Module with id {module_id} not found"
+        )
+    
+    if module.course.instructor_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to update this module"
         )
 
     update_data = updated_module.dict(exclude_unset=True)
@@ -58,13 +71,20 @@ def update_module(module_id: int, updated_module: schemas.ModuleUpdate, db: Sess
     return module
 
 
-def delete_module(module_id: int, db: Session):
+def delete_module(module_id: int, db: Session, current_user: Instructor):
     module = db.query(models.Module).filter(models.Module.id == module_id).first()
     if not module:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Module with id {module_id} not found"
         )
+    
+    if module.course.instructor_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to delete this module"
+        )
+
     db.delete(module)
     db.commit()
     return {"message": f"Module with id {module_id} deleted successfully"}
