@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from ..models import attemptModel, attemptAnswerModel, quizModel, optionModel, studentModel
+from ..models import attemptModel, attemptAnswerModel, quizModel, optionModel, questionModel, studentModel
 from ..schemas import attemptSchema, attemptAnswerSchema
 
 
@@ -33,6 +33,22 @@ def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate):
 
     if hasattr(attempt_data, "answers") and attempt_data.answers:
         for ans in attempt_data.answers:
+
+            question = (
+                db.query(questionModel.Question)
+                .filter(
+                    questionModel.Question.id == ans.question_id,
+                    questionModel.Question.quiz_id == attempt_data.quiz_id
+                )
+                .first()
+            )
+
+            if not question:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Question {ans.question_id} does not belong to quiz {attempt_data.quiz_id}"
+                )
+
             selected_option = (
                 db.query(optionModel.Option)
                 .filter(
