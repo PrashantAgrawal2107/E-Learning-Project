@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from ..core.dbConfig import get_db
 from .. import schemas
 from ..services import courseServices as services
-from ..auth.oauth2 import role_required
 
 router = APIRouter(
     prefix="/courses",
@@ -11,7 +10,7 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=schemas.CourseResponse)
-def create_course(course: schemas.CourseBase, db: Session = Depends(get_db), current_user=Depends(role_required(["instructor"]))):
+def create_course(course: schemas.CourseBase, db: Session = Depends(get_db)):
     return services.create_course(course, db)
 
 @router.get("/", response_model=list[schemas.CourseResponse])

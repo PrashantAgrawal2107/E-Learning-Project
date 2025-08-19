@@ -6,7 +6,7 @@ from datetime import datetime
 
 class InstructorBase(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     password: str
 
     class Config:
