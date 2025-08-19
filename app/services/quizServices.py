@@ -5,18 +5,17 @@ from ..models.questionModel import Question
 from ..models.optionModel import Option
 from ..models.moduleModel import Module 
 from ..schemas.quizSchema import QuizCreate, QuizUpdate
+from ..models.instructorModel import Instructor
 
 
-def create_quiz(db: Session, quiz_data: QuizCreate, module_id: int):
+def create_quiz(db: Session, quiz_data: QuizCreate, module_id: int, current_user: Instructor):
 
-    print('entry')
     module = db.query(Module).filter(Module.id == module_id).first()
     if not module:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Module with id {module_id} not found"
         )
-    print('module')
 
     if not quiz_data.name or not quiz_data.name.strip():
         raise HTTPException(
@@ -29,6 +28,13 @@ def create_quiz(db: Session, quiz_data: QuizCreate, module_id: int):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Quiz must contain at least one question"
         )
+    
+    if module.course.instructor_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to create quiz inside this module"
+        )
+
 
     quiz = Quiz(
         name=quiz_data.name.strip(),
@@ -91,10 +97,16 @@ def get_quiz_by_id(db: Session, quiz_id: int):
     return db.query(Quiz).filter(Quiz.id == quiz_id).first()
 
 
-def update_quiz(db: Session, quiz_id: int, quiz_data: QuizUpdate):
+def update_quiz(db: Session, quiz_id: int, quiz_data: QuizUpdate, current_user: Instructor):
     quiz = db.query(Quiz).filter(Quiz.id == quiz_id).first()
     if not quiz:
         return None
+    
+    if quiz.module.course.instructor_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to update this quiz"
+        )
 
     if quiz_data.name is not None:
         quiz.name = quiz_data.name
@@ -106,10 +118,17 @@ def update_quiz(db: Session, quiz_id: int, quiz_data: QuizUpdate):
     return quiz
 
 
-def delete_quiz(db: Session, quiz_id: int):
+def delete_quiz(db: Session, quiz_id: int, current_user: Instructor):
     quiz = db.query(Quiz).filter(Quiz.id == quiz_id).first()
     if not quiz:
         return None
+    
+    if quiz.module.course.instructor_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to delete this quiz"
+        )
+
     db.delete(quiz)
     db.commit()
     return quiz
