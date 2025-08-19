@@ -6,7 +6,6 @@ class CourseBase(BaseModel):
     name: str   
     description: Optional[str] = None
     duration: int 
-    instructor_id: int 
 
 class CourseUpdate(BaseModel):
     name: Optional[str] = None
@@ -23,6 +22,7 @@ class ModuleInCourse(BaseModel):
 
 class CourseResponse(CourseBase):
     id: int
+    instructor_id: int
     created_on: datetime
     updated_on: datetime
     modules: List[ModuleInCourse] = []

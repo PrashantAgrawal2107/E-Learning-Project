@@ -1,10 +1,8 @@
-# app/core/security.py
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
-
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Depends
 from .config import settings
 
 SECRET_KEY = settings.SECRET_KEY
@@ -13,7 +11,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 # Swagger/OpenAPI ke liye
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+bearer_scheme = HTTPBearer()
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
@@ -32,3 +30,6 @@ def decode_token(token: str) -> Dict[str, Any]:
             detail="Invalid or expired token",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+def get_token(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)) -> str:
+    return credentials.credentials

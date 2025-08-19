@@ -12,7 +12,7 @@ class InstructorBase(BaseModel):
     class Config:
         from_attributes = True 
 
-class   InstructorUpdate(BaseModel):
+class InstructorUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=100)
     email: Optional[EmailStr] = None
     password: Optional[str] = Field(None, min_length=6)

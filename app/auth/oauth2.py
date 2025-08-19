@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from ..core.dbConfig import get_db
-from ..core.security import oauth2_scheme, decode_token
+from ..core.security import decode_token , get_token
 from ..models.studentModel import Student
 from ..models.instructorModel import Instructor
 
@@ -37,7 +37,7 @@ def authenticate_user(db: Session, email: str, password: str, role: str):
 # ---- Dependencies for routes ----
 def get_current_user(
     db: Session = Depends(get_db),
-    token: str = Depends(oauth2_scheme),
+    token: str = Depends(get_token),
 ):
     payload = decode_token(token)
     email: Optional[str] = payload.get("sub")
