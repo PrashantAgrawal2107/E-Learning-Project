@@ -6,7 +6,7 @@ from ..auth.oauth2 import get_current_user
 
 router = APIRouter(prefix="/general", tags=["General"])
 
-@router.get("/")
+@router.get("/profile")
 def get_profile(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     if current_user.role == 'instructor':
         return instructorServices.get_instructor_by_id(current_user.id , db)
