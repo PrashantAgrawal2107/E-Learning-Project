@@ -3,21 +3,25 @@ from fastapi import HTTPException, status
 from app.models.questionModel import Question
 from app.models.optionModel import Option
 from app.schemas.questionSchema import QuestionUpdate, QuestionResponse
+from ..models.instructorModel import Instructor
 
-# 🔹 Update Question
-def update_question(db: Session, question_id: int, question_data: QuestionUpdate):
+def update_question(db: Session, question_id: int, question_data: QuestionUpdate, current_user: Instructor):
     question = db.query(Question).filter(Question.id == question_id).first()
     if not question:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Question not found"
         )
+    
+    if question.quiz.module.course.instructor_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to update this question"
+        )
 
-    # update content
     if question_data.content:
         question.content = question_data.content
 
-    # update options agar diye gaye hain
     if not question_data.options or len(question_data.options) < 2:
         raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -30,7 +34,7 @@ def update_question(db: Session, question_id: int, question_data: QuestionUpdate
                 detail="Each question must have at least one correct option"
     )        
 
-    question.options.clear()  # Clear existing options
+    question.options.clear()
     
     for opt in question_data.options:
         if not opt.description or not opt.description.strip():
@@ -51,13 +55,18 @@ def update_question(db: Session, question_id: int, question_data: QuestionUpdate
     return question
 
 
-# 🔹 Delete Question
-def delete_question(db: Session, question_id: int):
+def delete_question(db: Session, question_id: int, current_user: Instructor):
     question = db.query(Question).filter(Question.id == question_id).first()
     if not question:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Question not found"
+        )
+    
+    if question.quiz.module.course.instructor_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to delete this question"
         )
 
     db.delete(question)
