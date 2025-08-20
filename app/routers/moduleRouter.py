@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 from sqlalchemy.orm import Session
 from ..core.dbConfig import get_db
 from .. import schemas
@@ -34,3 +34,8 @@ def delete_module(module_id: int, db: Session = Depends(get_db), current_user: I
 @router.get("/course/{course_id}", response_model=list[schemas.ModuleResponse])
 def get_modules_by_course(course_id: int, db: Session = Depends(get_db)):
     return services.get_modules_by_course(course_id, db)
+
+@router.post("/upload/{module_id}/", dependencies=[Depends(require_role("instructor"))])
+async def upload_pdf(module_id: int, file: UploadFile , db: Session = Depends(get_db), current_user: Instructor = Depends(get_current_user)):
+    print("inrouter")
+    return services.save_module_file(db, module_id, file, current_user)

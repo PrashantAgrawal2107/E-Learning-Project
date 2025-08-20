@@ -31,10 +31,20 @@ class QuizInModule(BaseModel):
     class Config:
         from_attributes = True
 
+class ContentInModule(BaseModel):
+    id: int
+    file_name: str
+    file_url: str
+    file_type: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
 
 class ModuleResponse(ModuleBase):
     id: int
     quizzes: List[QuizInModule] = []
+    contents: List[ContentInModule] = []
     created_on: datetime
     updated_on: datetime
 

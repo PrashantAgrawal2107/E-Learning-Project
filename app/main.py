@@ -3,6 +3,7 @@ from .core import dbConfig , config
 from .routers import authRouter , instructorRouter , studentRouter , courseRouter , moduleRouter, enrollmentRouter, quizRouter, attemptRouter, questionRouter
 from sqlalchemy import create_engine
 from app.models import Base
+from fastapi.staticfiles import StaticFiles
 
 SQL_ALCHAMY_DATABASE_URL = config.settings.DATABASE_URL
 
@@ -12,6 +13,8 @@ engine = create_engine(
     SQL_ALCHAMY_DATABASE_URL
 )
 Base.metadata.create_all(engine)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(authRouter.router)
 app.include_router(instructorRouter.router)

@@ -9,3 +9,4 @@ from .questionModel import Question
 from .optionModel import Option
 from .attemptAnswerModel import AttemptAnswer
 from .attemptModel import Attempt
+from .moduleContentModel import ModuleContent
