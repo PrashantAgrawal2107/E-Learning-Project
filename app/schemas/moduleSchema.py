@@ -7,7 +7,7 @@ class ModuleBase(BaseModel):
     name: str
     duration: int
     description: Optional[str] = None
-    content_url: Optional[str] = None
+    contents: Optional[List[str]] = None
     course_id: int
 
     class Config:
@@ -18,7 +18,6 @@ class ModuleUpdate(BaseModel):
     name: Optional[str] = None
     duration: Optional[int] = None
     description: Optional[str] = None
-    content_url: Optional[str] = None
 
     class Config:
         from_attributes = True

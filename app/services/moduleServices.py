@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from .. import models, schemas
 from ..models.instructorModel import Instructor
 from ..models.moduleModel import Module
+from ..models.moduleContentModel import ModuleContent
 import os
 
 
@@ -27,11 +28,11 @@ def create_module(module: schemas.ModuleBase, db: Session, current_user: Instruc
             detail="You do not have permission to create modules for this course"
         )
 
-    new_module = models.Module(
+    new_module = Module(
         name=module.name,
         duration=module.duration,
         description=module.description,
-        content_url=module.content_url,
+        contents=module.contents,
         course_id=module.course_id
     )
     db.add(new_module)
@@ -41,12 +42,12 @@ def create_module(module: schemas.ModuleBase, db: Session, current_user: Instruc
 
 
 def get_all_modules(db: Session):
-    modules = db.query(models.Module).all()
+    modules = db.query(Module).all()
     return modules
 
 
 def get_module_by_id(module_id: int, db: Session):
-    module = db.query(models.Module).filter(models.Module.id == module_id).first()
+    module = db.query(Module).filter(Module.id == module_id).first()
     if not module:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -124,16 +125,18 @@ def save_module_file(db: Session, module_id: int, file: UploadFile, current_user
         f.write(file.file.read())
 
     file_url = f"/{file_location}"
+    file_name, file_extension = os.path.splitext(file.filename) 
+    file_type = file_extension[1:]
 
-    if not module.contents:
-        module.contents = []
-    if isinstance(module.contents, str):
-        module.contents = [module.contents]
+    new_content = ModuleContent(
+        file_name = file_name,
+        file_url = file_url,
+        file_type = file_type,
+        module_id = module_id
+    )
 
-    module.contents.append(file_url)
-
-    db.add(module)
+    db.add(new_content)
     db.commit()
-    db.refresh(module)
+    db.refresh(new_content)
 
     return {"message": "File uploaded successfully", "file_url": file_url}
