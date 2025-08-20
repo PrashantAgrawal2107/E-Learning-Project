@@ -13,8 +13,14 @@ def create_instructor(instructor: instructorSchema.InstructorBase, db: Session =
     return instructorServices.create_instructor(instructor, db)
 
 @router.get("/", response_model=list[instructorSchema.InstructorResponse])
-def get_all_instructors(db: Session = Depends(get_db)):
-    return instructorServices.get_all_instructors(db)
+def get_all_instructors(
+    db: Session = Depends(get_db),
+    sort_by: str = "created_on",     
+    order: str = "asc",               
+    skip: int = 0,                   
+    limit: int = 10  
+):
+    return instructorServices.get_all_instructors(db, sort_by, order, skip, limit)
 
 @router.get("/{instructor_id}", response_model=instructorSchema.InstructorResponse)
 def get_instructor(instructor_id: int, db: Session = Depends(get_db)):

@@ -28,8 +28,41 @@ def create_instructor(instructor: schemas.InstructorBase, db: Session):
     db.refresh(db_instructor)
     return db_instructor
 
-def get_all_instructors(db: Session):
-    return db.query(models.Instructor).all()
+def get_all_instructors(db: Session, sort_by: str = "created_on", order: str = "asc", skip: int = 0, limit: int = 10):
+    valid_sort_fields = {
+        "name": Instructor.name,
+        "created_on": Instructor.created_on,
+        "updated_on": Instructor.updated_on
+    }
+
+    if sort_by not in valid_sort_fields:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid sort field. Allowed: {list(valid_sort_fields.keys())}"
+        )
+
+    if order.lower() not in ["asc", "desc"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid order. Allowed: ['asc', 'desc']"
+        )
+
+    sort = valid_sort_fields[sort_by]
+
+    if order.lower() == "desc":
+        sort = sort.desc()
+    else:
+        sort = sort.asc()
+
+    instructors = (
+        db.query(Instructor)
+        .order_by(sort)
+        .offset(skip*limit)   
+        .limit(limit)   
+        .all()
+    )
+
+    return instructors
 
 def get_instructor_by_id(instructor_id: int, db: Session):
     instructor = db.query(models.Instructor).filter(models.Instructor.id == instructor_id).first()

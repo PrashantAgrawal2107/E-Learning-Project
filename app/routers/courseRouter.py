@@ -16,8 +16,14 @@ def create_course(course: schemas.CourseBase, db: Session = Depends(get_db), cur
     return services.create_course(course, db, current_user)
 
 @router.get("/", response_model=list[schemas.CourseResponse])
-def get_courses(db: Session = Depends(get_db)):
-    return services.get_all_courses(db)
+def get_courses(
+    db: Session = Depends(get_db),
+    sort_by: str = "created_on",     
+    order: str = "asc",               
+    skip: int = 0,                   
+    limit: int = 10 
+):
+    return services.get_all_courses(db, sort_by, order, skip, limit )
 
 @router.get("/{course_id}", response_model=schemas.CourseResponse)
 def get_course(course_id: int, db: Session = Depends(get_db)):

@@ -13,8 +13,15 @@ def create_student(student: studentSchema.StudentBase, db: Session = Depends(get
     return studentServices.create_student(student, db)
 
 @router.get("/", response_model=list[studentSchema.StudentResponse])
-def get_all_students(db: Session = Depends(get_db)):
-    return studentServices.get_all_students(db)
+def get_all_students(
+    db: Session = Depends(get_db),
+    sort_by: str = "created_on",     
+    order: str = "asc",               
+    skip: int = 0,                   
+    limit: int = 10                  
+):
+    return studentServices.get_all_students(db, sort_by, order, skip, limit)
+
 
 @router.get("/{student_id}", response_model=studentSchema.StudentResponse)
 def get_student(student_id: int, db: Session = Depends(get_db)):

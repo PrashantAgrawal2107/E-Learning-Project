@@ -28,8 +28,43 @@ def create_student(student: schemas.StudentBase, db: Session):
     db.refresh(db_student)
     return db_student
 
-def get_all_students(db: Session):
-    return db.query(models.Student).all()
+def get_all_students(db: Session, sort_by: str = "created_on", order: str = "asc", skip: int = 0, limit: int = 10):
+
+    valid_sort_fields = {
+        "name": Student.name,
+        "created_on": Student.created_on,
+        "updated_on": Student.updated_on
+    }
+
+    if sort_by not in valid_sort_fields:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid sort field. Allowed: {list(valid_sort_fields.keys())}"
+        )
+    
+    if order.lower() not in ["asc", "desc"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid order. Allowed: ['asc', 'desc']"
+        )
+
+    sort = valid_sort_fields[sort_by]
+
+    if order.lower() == "desc":
+        sort = sort.desc()
+    else:
+        sort = sort.asc()
+
+    students = (
+        db.query(Student)
+        .order_by(sort)
+        .offset(skip*limit)   
+        .limit(limit)   
+        .all()
+    )
+
+    return students
+
 
 def get_student_by_id(student_id: int, db: Session):
     student = db.query(models.Student).filter(models.Student.id == student_id).first()
