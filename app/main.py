@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from .core import dbConfig , config
-from .routers import authRouter , instructorRouter , studentRouter , courseRouter , moduleRouter, enrollmentRouter, quizRouter, attemptRouter, questionRouter, generalRouter
+from .routers import authRouter , instructorRouter , studentRouter , courseRouter , moduleRouter, enrollmentRouter, quizRouter, attemptRouter, questionRouter, generalRouter, searchRouter
 from sqlalchemy import create_engine
 from app.models import Base
 from fastapi.staticfiles import StaticFiles
@@ -18,6 +18,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(authRouter.router)
 app.include_router(generalRouter.router)
+app.include_router(searchRouter.router)
 app.include_router(instructorRouter.router)
 app.include_router(studentRouter.router)
 app.include_router(courseRouter.router)
