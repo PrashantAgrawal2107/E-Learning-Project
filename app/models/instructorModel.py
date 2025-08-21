@@ -13,6 +13,5 @@ class Instructor(Base, IDMixin, TimestampMixin):
     courses = relationship(
         "Course",
         back_populates="instructor",
-        cascade="all, delete-orphan",
-        passive_deletes=True
+        cascade="all, delete-orphan"
     )

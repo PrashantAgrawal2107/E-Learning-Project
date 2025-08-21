@@ -9,7 +9,7 @@ class Question(Base, IDMixin, TimestampMixin):
 
     quiz_id = Column(
         Integer,
-        ForeignKey("quizzes.id", ondelete="CASCADE"),
+        ForeignKey("quizzes.id"),
         nullable=False
     )
 

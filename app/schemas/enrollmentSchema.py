@@ -6,7 +6,6 @@ from datetime import datetime
 class EnrollmentBase(BaseModel):
     student_id: int
     course_id: int
-    enrollment_date: Optional[datetime] = None
     progress: Optional[float] = 0.0
 
 class EnrollmentCreate(EnrollmentBase):
@@ -17,5 +16,6 @@ class EnrollmentUpdate(BaseModel):
     
 class EnrollmentResponse(EnrollmentBase):
     id: int
+    enroll_date: datetime
     class Config:
         from_attributes = True

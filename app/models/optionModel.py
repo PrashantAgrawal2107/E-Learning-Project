@@ -10,7 +10,7 @@ class Option(Base, IDMixin):
 
     question_id = Column(
         Integer,
-        ForeignKey("questions.id", ondelete="CASCADE"),
+        ForeignKey("questions.id"),
         nullable=False
     )
 

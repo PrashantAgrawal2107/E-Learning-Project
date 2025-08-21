@@ -11,7 +11,7 @@ class Course(Base, IDMixin, TimestampMixin):
 
     instructor_id = Column(
         Integer,
-        ForeignKey("instructors.id", ondelete="CASCADE"),
+        ForeignKey("instructors.id"),
         nullable=False,
     )
 
@@ -24,8 +24,7 @@ class Course(Base, IDMixin, TimestampMixin):
     modules = relationship(
         "Module",
         back_populates="course",
-        cascade="all, delete-orphan",
-        passive_deletes=True
+        cascade="all, delete-orphan"
     )
 
     enrollments = relationship(

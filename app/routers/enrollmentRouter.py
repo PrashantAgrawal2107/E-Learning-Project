@@ -17,11 +17,11 @@ router = APIRouter(
 def create_enrollment(enrollment: enrollmentSchema.EnrollmentBase, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     return services.create_enrollment(enrollment, db, current_user)
 
-@router.get("/", response_model=List[enrollmentSchema.EnrollmentBase])
+@router.get("/", response_model=List[enrollmentSchema.EnrollmentResponse])
 def get_all_enrollments(db: Session = Depends(get_db)):
     return services.get_all_enrollments(db)
 
-@router.get("/{enrollment_id}", response_model=enrollmentSchema.EnrollmentBase)
+@router.get("/{enrollment_id}", response_model=enrollmentSchema.EnrollmentResponse)
 def get_enrollment_by_id(enrollment_id: int, db: Session = Depends(get_db)):
     return services.get_enrollment_by_id(enrollment_id, db)
 

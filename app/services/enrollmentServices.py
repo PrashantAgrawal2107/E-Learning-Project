@@ -46,7 +46,7 @@ def create_enrollment(enrollment: enrollmentSchema.EnrollmentBase, db: Session, 
     db_enrollment = enrollmentModel.Enrollment(
         student_id=enrollment.student_id,
         course_id=enrollment.course_id,
-        enroll_date=datetime.now(timezone.utc)
+        enroll_date=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     )
     db.add(db_enrollment)
     db.commit()
