@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from ..core.dbConfig import get_db
 from ..schemas.quizSchema import QuizCreate, QuizUpdate, QuizResponse
 from ..services import quizServices
-from ..auth.oauth2 import require_role, get_current_user
+from ..auth.authentication import require_role, get_current_user
 from ..models.instructorModel import Instructor
 
 router = APIRouter(prefix="/quizzes", tags=["Quizzes"])

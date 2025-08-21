@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from ..core.dbConfig import get_db
 from ..schemas import studentSchema
 from ..services import studentServices
-from ..auth.oauth2 import require_role, get_current_user
+from ..auth.authentication import require_role, get_current_user
 from ..models.studentModel import Student
 
 router = APIRouter(prefix="/students", tags=["Students"])

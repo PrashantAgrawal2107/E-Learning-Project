@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from ..core.dbConfig import get_db
 from ..services import instructorServices, studentServices
-from ..auth.oauth2 import get_current_user
+from ..auth.authentication import get_current_user
 
 router = APIRouter(prefix="/general", tags=["General"])
 

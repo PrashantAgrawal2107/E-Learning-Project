@@ -3,7 +3,7 @@ from typing import Optional, Dict, Any
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from fastapi import HTTPException, status, Depends
-from .config import settings
+from ..core.config import settings
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM
