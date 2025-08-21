@@ -46,6 +46,7 @@ def create_enrollment(enrollment: enrollmentSchema.EnrollmentBase, db: Session, 
     db_enrollment = enrollmentModel.Enrollment(
         student_id=enrollment.student_id,
         course_id=enrollment.course_id,
+        progress=0,
         enroll_date=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     )
     db.add(db_enrollment)
@@ -64,6 +65,34 @@ def get_enrollment_by_id(enrollment_id: int, db: Session):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Enrollment not found"
         )
+    return enrollment
+
+def update_progress(enrollment_id: int, enroll_update: enrollmentSchema.EnrollmentUpdate, db: Session, current_user):
+    enrollment = db.query(enrollmentModel.Enrollment).filter(
+        enrollmentModel.Enrollment.id == enrollment_id
+    ).first()
+
+    if not enrollment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Enrollment not found"
+        )
+
+    if current_user.role != "student" or current_user.id != enrollment.student_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only update your own progress"
+        )
+
+    if enroll_update.progress < 0 or enroll_update.progress > 100:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Progress must be between 0 and 100"
+        )
+
+    enrollment.progress = enroll_update.progress
+    db.commit()
+    db.refresh(enrollment)
     return enrollment
 
 

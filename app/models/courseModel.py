@@ -30,6 +30,5 @@ class Course(Base, IDMixin, TimestampMixin):
     enrollments = relationship(
         "Enrollment",
         back_populates="course",
-        cascade="all, delete-orphan",
-        passive_deletes=True
+        cascade="all, delete-orphan"
     )
