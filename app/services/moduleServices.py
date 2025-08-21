@@ -32,10 +32,10 @@ def create_module(module: schemas.ModuleBase, db: Session, current_user: Instruc
         name=module.name,
         duration=module.duration,
         description=module.description,
-        contents=module.contents,
         course_id=module.course_id
     )
     db.add(new_module)
+    course.duration = course.duration + module.duration 
     db.commit()
     db.refresh(new_module)
     return new_module
@@ -70,9 +70,14 @@ def update_module(module_id: int, updated_module: schemas.ModuleUpdate, db: Sess
             detail="You do not have permission to update this module"
         )
 
+    old_duration = module.duration
     update_data = updated_module.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(module, key, value)
+
+    if "duration" in update_data:
+        diff = update_data["duration"] - old_duration
+        module.course.duration = module.course.duration + diff
 
     db.commit()
     db.refresh(module)
@@ -92,6 +97,8 @@ def delete_module(module_id: int, db: Session, current_user: Instructor):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You do not have permission to delete this module"
         )
+    
+    module.course.duration = module.course.duration - module.duration
 
     db.delete(module)
     db.commit()

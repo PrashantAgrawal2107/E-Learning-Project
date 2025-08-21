@@ -14,7 +14,9 @@ def create_course(course: schemas.CourseBase, db: Session, current_user: Instruc
         )
     
     db_course = models.Course(
-        **course.model_dump(),
+        name= course.name,
+        description=course.description,
+        duration=0,
         instructor_id=current_user.id
         )
     db.add(db_course)

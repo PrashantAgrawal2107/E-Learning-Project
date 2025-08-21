@@ -5,12 +5,10 @@ from datetime import datetime
 class CourseBase(BaseModel):
     name: str   
     description: Optional[str] = None
-    duration: int 
 
 class CourseUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
-    duration: Optional[int] = None
 
 class ModuleInCourse(BaseModel):
     id: int
@@ -23,6 +21,7 @@ class ModuleInCourse(BaseModel):
 class CourseResponse(CourseBase):
     id: int
     instructor_id: int
+    duration: int
     created_on: datetime
     updated_on: datetime
     modules: List[ModuleInCourse] = []

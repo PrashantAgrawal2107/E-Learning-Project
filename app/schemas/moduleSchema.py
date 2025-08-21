@@ -7,7 +7,6 @@ class ModuleBase(BaseModel):
     name: str
     duration: int
     description: Optional[str] = None
-    contents: Optional[List[str]] = None
     course_id: int
 
     class Config:
