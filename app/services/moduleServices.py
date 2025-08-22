@@ -5,7 +5,10 @@ from ..models.instructorModel import Instructor
 from ..models.moduleModel import Module
 from ..models.moduleContentModel import ModuleContent
 import os
-
+from ..schemas.sortSchema import SortSchema
+from ..models.courseModel import Course
+from ..models.enrollmentModel import Enrollment
+from ..auth.validations import sort_validation
 
 UPLOAD_DIR = "static/uploads"
 
@@ -41,18 +44,70 @@ def create_module(module: schemas.ModuleBase, db: Session, current_user: Instruc
     return new_module
 
 
-def get_all_modules(db: Session):
-    modules = db.query(Module).all()
-    return modules
+def get_all_modules(db: Session, current_user, params: SortSchema):
+    query = db.query(Module)
+
+    if current_user.role == "instructor":
+        query = query.join(Module.course).filter(Course.instructor_id == current_user.id)
+
+    elif current_user.role == "student":
+        enrolled_course_ids = [
+            e.course_id for e in db.query(Enrollment)
+                                  .filter(Enrollment.student_id == current_user.id)
+                                  .all()
+        ]
+        query = query.filter(Module.course_id.in_(enrolled_course_ids))
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Role not allowed to fetch modules"
+        )
+    
+    sort_by = params.sort_by
+    order = params.order    
+    limit = params.limit
+    skip = params.skip
+
+    valid_sort_fields = {
+        "name": Module.name,
+        "duration": Module.duration,
+        "created_on": Module.created_on
+    }
+
+    sort = sort_validation(valid_sort_fields,sort_by, order)
+
+    return query.order_by(sort).offset(skip*limit).limit(limit).all()
 
 
-def get_module_by_id(module_id: int, db: Session):
+def get_module_by_id(module_id: int, db: Session, current_user):
     module = db.query(Module).filter(Module.id == module_id).first()
+
     if not module:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Module with id {module_id} not found"
         )
+
+    if current_user.role == "instructor":
+        if module.course.instructor_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not enough permissions to view this module"
+            )
+        
+    if current_user.role == "student":
+        enrolled_course_ids = [
+            e.course_id for e in db.query(Enrollment)
+                                  .filter(Enrollment.student_id == current_user.id)
+                                  .all()
+        ]
+        if module.course_id not in enrolled_course_ids:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not enough permissions to view this module"
+            )
+
     return module
 
 
@@ -105,14 +160,52 @@ def delete_module(module_id: int, db: Session, current_user: Instructor):
     return {"message": f"Module with id {module_id} deleted successfully"}
 
 
-def get_modules_by_course(course_id: int, db: Session):
-    course = db.query(models.Course).filter(models.Course.id == course_id).first()
+def get_modules_by_course(course_id: int, db: Session, current_user, params: SortSchema):
+    course = db.query(Course).filter(Course.id == course_id).first()
     if not course:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id {course_id} not found"
         )
-    return course.modules
+
+    if current_user.role == "instructor":
+        if course.instructor_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to access this course's modules"
+            )
+    elif current_user.role == "student":
+        enrolled = db.query(Enrollment).filter(
+            Enrollment.course_id == course_id,
+            Enrollment.student_id == current_user.id
+        ).first()
+        if not enrolled:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to access this course's modules"
+            )
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Role not allowed to fetch modules"
+        )
+
+    sort_by = params.sort_by
+    order = params.order
+    limit = params.limit
+    skip = params.skip
+
+    valid_sort_fields = {
+        "name": Module.name,
+        "duration": Module.duration,
+        "created_on": Module.created_on
+    }
+
+    sort = sort_validation(valid_sort_fields,sort_by, order)
+
+    return db.query(Module).filter(Module.course_id == course_id)\
+             .order_by(sort).offset(skip * limit).limit(limit).all()
+
 
 def save_module_file(db: Session, module_id: int, file: UploadFile, current_user: Instructor):
     print(f"Uploading file for module {module_id} by user {current_user.id}")
