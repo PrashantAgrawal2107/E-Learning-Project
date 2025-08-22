@@ -5,6 +5,7 @@ from .. import schemas
 from ..services import courseServices as services
 from ..auth.authentication import require_role, get_current_user
 from ..models.instructorModel import Instructor
+from ..schemas.sortSchema import SortSchema
 
 router = APIRouter(
     prefix="/courses",
@@ -18,12 +19,9 @@ def create_course(course: schemas.CourseBase, db: Session = Depends(get_db), cur
 @router.get("/", response_model=list[schemas.CourseResponse])
 def get_courses(
     db: Session = Depends(get_db),
-    sort_by: str = "created_on",     
-    order: str = "asc",               
-    skip: int = 0,                   
-    limit: int = 10 
+    params: SortSchema = Depends()
 ):
-    return services.get_all_courses(db, sort_by, order, skip, limit )
+    return services.get_all_courses(db, params)
 
 @router.get("/{course_id}", response_model=schemas.CourseResponse)
 def get_course(course_id: int, db: Session = Depends(get_db)):

@@ -5,6 +5,7 @@ from ..schemas import studentSchema
 from ..services import studentServices
 from ..auth.authentication import require_role, get_current_user
 from ..models.studentModel import Student
+from ..schemas.sortSchema import SortSchema
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
@@ -15,12 +16,9 @@ def create_student(student: studentSchema.StudentBase, db: Session = Depends(get
 @router.get("/", response_model=list[studentSchema.StudentResponse])
 def get_all_students(
     db: Session = Depends(get_db),
-    sort_by: str = "created_on",     
-    order: str = "asc",               
-    skip: int = 0,                   
-    limit: int = 10                  
+    params: SortSchema = Depends()            
 ):
-    return studentServices.get_all_students(db, sort_by, order, skip, limit)
+    return studentServices.get_all_students(db, params)
 
 
 @router.get("/{student_id}", response_model=studentSchema.StudentResponse)

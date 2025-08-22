@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from ..auth.hashing import Hash
 from datetime import datetime
 from ..models.studentModel import Student
+from ..auth.validations import sort_validation
 
 def create_student(student: schemas.StudentBase, db: Session):
     
@@ -28,7 +29,7 @@ def create_student(student: schemas.StudentBase, db: Session):
     db.refresh(db_student)
     return db_student
 
-def get_all_students(db: Session, sort_by: str = "created_on", order: str = "asc", skip: int = 0, limit: int = 10):
+def get_all_students(db: Session, params):
 
     valid_sort_fields = {
         "name": Student.name,
@@ -36,19 +37,12 @@ def get_all_students(db: Session, sort_by: str = "created_on", order: str = "asc
         "updated_on": Student.updated_on
     }
 
-    if sort_by not in valid_sort_fields:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid sort field. Allowed: {list(valid_sort_fields.keys())}"
-        )
-    
-    if order.lower() not in ["asc", "desc"]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid order. Allowed: ['asc', 'desc']"
-        )
+    sort_by = params.sort_by
+    order = params.order
+    skip = params.skip
+    limit = params.limit    
 
-    sort = valid_sort_fields[sort_by]
+    sort = sort_validation(valid_sort_fields, sort_by, order)
 
     if order.lower() == "desc":
         sort = sort.desc()

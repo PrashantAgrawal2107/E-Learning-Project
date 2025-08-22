@@ -3,6 +3,7 @@ from .. import models, schemas
 from fastapi import HTTPException, status
 from ..auth.hashing import Hash
 from ..models.instructorModel import Instructor
+from ..auth.validations import sort_validation
 
 def create_instructor(instructor: schemas.InstructorBase, db: Session):
     
@@ -28,26 +29,20 @@ def create_instructor(instructor: schemas.InstructorBase, db: Session):
     db.refresh(db_instructor)
     return db_instructor
 
-def get_all_instructors(db: Session, sort_by: str = "created_on", order: str = "asc", skip: int = 0, limit: int = 10):
+def get_all_instructors(db: Session, params):
+
     valid_sort_fields = {
         "name": Instructor.name,
         "created_on": Instructor.created_on,
         "updated_on": Instructor.updated_on
     }
 
-    if sort_by not in valid_sort_fields:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid sort field. Allowed: {list(valid_sort_fields.keys())}"
-        )
+    sort_by = params.sort_by
+    order = params.order
+    skip = params.skip
+    limit = params.limit    
 
-    if order.lower() not in ["asc", "desc"]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid order. Allowed: ['asc', 'desc']"
-        )
-
-    sort = valid_sort_fields[sort_by]
+    sort = sort_validation(valid_sort_fields, sort_by, order)
 
     if order.lower() == "desc":
         sort = sort.desc()

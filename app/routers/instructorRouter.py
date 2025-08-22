@@ -5,6 +5,7 @@ from ..schemas import instructorSchema
 from ..services import instructorServices
 from ..auth.authentication import require_role, get_current_user
 from ..models.instructorModel import Instructor
+from ..schemas.sortSchema import SortSchema
 
 router = APIRouter(prefix="/instructors", tags=["Instructors"])
 
@@ -15,12 +16,9 @@ def create_instructor(instructor: instructorSchema.InstructorBase, db: Session =
 @router.get("/", response_model=list[instructorSchema.InstructorResponse])
 def get_all_instructors(
     db: Session = Depends(get_db),
-    sort_by: str = "created_on",     
-    order: str = "asc",               
-    skip: int = 0,                   
-    limit: int = 10  
+    params: SortSchema = Depends()
 ):
-    return instructorServices.get_all_instructors(db, sort_by, order, skip, limit)
+    return instructorServices.get_all_instructors(db, params)
 
 @router.get("/{instructor_id}", response_model=instructorSchema.InstructorResponse)
 def get_instructor(instructor_id: int, db: Session = Depends(get_db)):
