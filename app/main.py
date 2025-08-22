@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .core import dbConfig , config
+from .core import config
 from .routers import authRouter , instructorRouter , studentRouter , courseRouter , moduleRouter, enrollmentRouter, quizRouter, attemptRouter, questionRouter, generalRouter, searchRouter
 from sqlalchemy import create_engine
 from app.models import Base
