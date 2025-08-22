@@ -6,6 +6,9 @@ from ..models.optionModel import Option
 from ..models.moduleModel import Module 
 from ..schemas.quizSchema import QuizCreate, QuizUpdate
 from ..models.instructorModel import Instructor
+from ..models.enrollmentModel import Enrollment
+from ..models.courseModel import Course
+from ..auth.validations import sort_validation
 
 
 def create_quiz(db: Session, quiz_data: QuizCreate, module_id: int, current_user: Instructor):
@@ -89,12 +92,77 @@ def create_quiz(db: Session, quiz_data: QuizCreate, module_id: int, current_user
     return quiz
 
 
-def get_all_quizzes(db: Session):
-    return db.query(Quiz).all()
+def get_all_quizzes(db: Session, current_user, params):
+    query = db.query(Quiz)
 
+    if current_user.role == "instructor":
+        courses = db.query(Course).filter(Course.instructor_id == current_user.id).all()
+        course_ids = [c.id for c in courses]
 
-def get_quiz_by_id(db: Session, quiz_id: int):
-    return db.query(Quiz).filter(Quiz.id == quiz_id).first()
+        if not course_ids:
+            return []
+
+        query = query.join(Module).filter(Module.course_id.in_(course_ids))
+
+    if current_user.role == "student":
+        enrollments = db.query(Enrollment).filter(Enrollment.student_id == current_user.id).all()
+        course_ids = [e.course_id for e in enrollments]
+
+        if not course_ids:
+            return []
+
+        query = query.join(Module).filter(Module.course_id.in_(course_ids))
+
+    valid_sort_fields = {
+        "name": Quiz.name,
+        "created_on": Quiz.created_on
+    }
+
+    sort_by = params.sort_by
+    order = params.order
+    skip = params.skip
+    limit = params.limit    
+
+    sort = sort_validation(valid_sort_fields, sort_by, order)
+
+    if order.lower() == "desc":
+        sort = sort.desc()
+    else:
+        sort = sort.asc()
+
+    return query.order_by(sort).offset(skip*limit).limit(limit).all()
+
+def get_quiz_by_id(db: Session, quiz_id: int, current_user):
+    quiz = db.query(Quiz).filter(Quiz.id == quiz_id).first()
+
+    if not quiz:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Quiz not found"
+        )
+
+    if current_user.role == "instructor":
+
+        if quiz.module.course.instructor_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not enough permissions to view this quiz"
+            )
+
+    if current_user.role == "student":
+        enrolled_course_ids = [
+            e.course_id for e in db.query(Enrollment)
+                                  .filter(Enrollment.student_id == current_user.id)
+                                  .all()
+        ]
+
+        if quiz.module.course_id not in enrolled_course_ids:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not enough permissions to view this quiz"
+            )
+
+    return quiz
 
 
 def update_quiz(db: Session, quiz_id: int, quiz_data: QuizUpdate, current_user: Instructor):
