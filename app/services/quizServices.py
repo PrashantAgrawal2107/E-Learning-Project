@@ -55,16 +55,22 @@ def create_quiz(db: Session, quiz_data: QuizCreate, module_id: int, current_user
                 detail="Question text cannot be empty"
             )
 
-        if not q.options or len(q.options) < 2:
+        if not q.options or len(q.options) < 2 or len(q.options) > 4:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Each question must have at least 2 options"
+                detail="Each question must have at 2-4 options"
             )
+        
+        correct_options = 0
 
-        if not any(opt.is_correct for opt in q.options):
+        for opt in q.options:
+            if opt.is_correct:
+                correct_options+=1
+
+        if correct_options!=1:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Each question must have at least one correct option"
+                detail="Each question must have one correct option"
             )
 
         question = Question(content=q.content.strip(), quiz=quiz)

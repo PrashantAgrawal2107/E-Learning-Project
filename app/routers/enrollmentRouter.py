@@ -29,7 +29,7 @@ def get_enrollment_by_id(enrollment_id: int, db: Session = Depends(get_db)):
 def update_progress(enrollment_id: int, enroll_update: enrollmentSchema.EnrollmentUpdate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     return services.update_progress(enrollment_id, enroll_update, db, current_user)
 
-@router.delete("/{enrollment_id}", dependencies=[Depends(require_role(["instructor", "student"]))])
+@router.delete("/{enrollment_id}")
 def delete_enrollment(enrollment_id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     return services.delete_enrollment(enrollment_id, db, current_user)
 
