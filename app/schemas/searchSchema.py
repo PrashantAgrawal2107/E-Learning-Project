@@ -12,9 +12,9 @@ class SearchAllResponse(BaseModel):
     courses: List[CourseResponse] = []
 
 class SearchDashboardResponse(BaseModel):
-    courses: list[CourseResponse]
-    modules: list[ModuleResponse]
-    quizzes: list[QuizResponse]
+    courses: List[CourseResponse] = []
+    modules: List[ModuleResponse] = []
+    quizzes: List[QuizResponse] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
