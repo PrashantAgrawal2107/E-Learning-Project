@@ -94,7 +94,7 @@ def create_quiz(db: Session, quiz_data: QuizCreate, module_id: int, current_user
     db.commit()
     db.refresh(quiz)
 
-    print('**',quiz)
+    # print('**',quiz)
     return quiz
 
 

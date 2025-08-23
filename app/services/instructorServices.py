@@ -87,8 +87,6 @@ def update_instructor(instructor_id: int, updated_instructor: schemas.Instructor
     if "password" in update_data:
         update_data["password"] = Hash.bcrypt(update_data["password"])
 
-    # Update updated_at timestamp
-    # update_data["updated_on"] = datetime.utcnow()
 
     for key, value in update_data.items():
         setattr(instructor, key, value)

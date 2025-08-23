@@ -46,7 +46,6 @@ def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate, curre
             detail="You are not enrolled in the course of this quiz"
         )
 
-    # ✅ Check number of attempts
     attempt_count = (
         db.query(attemptModel.Attempt)
         .filter(
@@ -62,7 +61,6 @@ def create_attempt(db: Session, attempt_data: attemptSchema.AttemptCreate, curre
             detail="You have already attempted this quiz 3 times. No more attempts allowed."
         )
 
-    # ✅ New Attempt
     attempt = attemptModel.Attempt(
         student_id=attempt_data.student_id,
         quiz_id=attempt_data.quiz_id,

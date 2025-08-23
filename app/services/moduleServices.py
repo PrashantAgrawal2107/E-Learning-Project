@@ -208,7 +208,7 @@ def get_modules_by_course(course_id: int, db: Session, current_user, params: Sor
 
 
 def save_module_file(db: Session, module_id: int, file: UploadFile, current_user: Instructor):
-    print(f"Uploading file for module {module_id} by user {current_user.id}")
+    # print(f"Uploading file for module {module_id} by user {current_user.id}")
     module = db.query(Module).filter(Module.id == module_id).first()
     if not module:
         raise HTTPException(status_code=404, detail=f"Module with id {module_id} not found")

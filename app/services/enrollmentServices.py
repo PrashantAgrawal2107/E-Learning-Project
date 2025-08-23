@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from ..models import enrollmentModel , studentModel , courseModel
 from ..schemas import enrollmentSchema
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 def create_enrollment(enrollment: enrollmentSchema.EnrollmentBase, db: Session, current_user):

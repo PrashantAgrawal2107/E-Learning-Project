@@ -5,8 +5,6 @@ from ..services import enrollmentServices as services
 from ..core.dbConfig import get_db
 from typing import List
 from ..auth.authentication import require_role, get_current_user
-from ..models.instructorModel import Instructor
-from ..models.studentModel import Student
 
 router = APIRouter(
     prefix="/enrollments",
