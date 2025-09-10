@@ -4,10 +4,24 @@ from .routers import authRouter , instructorRouter , studentRouter , courseRoute
 from sqlalchemy import create_engine
 from app.models import Base
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 SQL_ALCHAMY_DATABASE_URL = config.settings.DATABASE_URL
 
 app = FastAPI(title='E-Learning Platform')
+
+origins = [
+    "http://localhost",
+    "http://localhost:5173", # The default port for Vite
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 engine = create_engine(
     SQL_ALCHAMY_DATABASE_URL
