@@ -1,10 +1,28 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+import { store, persistor } from './redux/store.ts';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import ThemeProvider from './components/ThemeProvider.tsx'; // Keep your ThemeProvider
+import { BrowserRouter } from 'react-router-dom';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error('Failed to find the root element');
+}
+
+ReactDOM.createRoot(rootElement).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <PersistGate persistor={persistor}>
+        <Provider store={store}>
+          <ThemeProvider> {/* The ThemeProvider logic needs to be inside */}
+            <App />
+          </ThemeProvider>
+        </Provider>
+      </PersistGate>
+    </BrowserRouter>
+  </React.StrictMode>
+);

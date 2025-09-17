@@ -7,7 +7,7 @@ from ..auth.authentication import require_role, get_current_user
 from ..models.instructorModel import Instructor
 from ..schemas.sortSchema import SortSchema
 
-router = APIRouter(prefix="/instructors", tags=["Instructors"])
+router = APIRouter(prefix="/api/instructors", tags=["Instructors"])
 
 @router.post("/", response_model=instructorSchema.InstructorResponse)
 def create_instructor(instructor: instructorSchema.InstructorBase, db: Session = Depends(get_db)):

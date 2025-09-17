@@ -7,7 +7,7 @@ from ..auth.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 from ..auth.authentication import authenticate_user
 from ..schemas.authSchema import LoginRequest, Token
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
 @router.post("/login", response_model=Token)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):

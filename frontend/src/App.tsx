@@ -1,67 +1,22 @@
-import { useState, useEffect } from 'react';
-import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home.tsx'; 
+import SignUp from './pages/SignUp';
+import Login from './pages/Login.tsx';
+import About from './pages/About.tsx';
+import Header from './components/Header.tsx'; 
+import FooterCom from './components/Footer.tsx'; 
 
-
-function App() {
-
-  type Instructor = {
-    id: number,
-    name: string,
-    role: string
-  }
-
-  const [instructors, setInstructors] = useState<Instructor[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Define the async function to fetch data
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/instructors');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.json();
-        setInstructors(result);
-        console.log(result[0])
-      } catch (e: any) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []); // The empty dependency array ensures this effect runs only once on mount
-
-  if (loading) {
-    return <div className="loading">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="error">Error: {error}</div>;
-  }
-
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>FastAPI and React Integration</h1>
-        <h2>Our Instructors</h2>
-        {instructors && instructors.length > 0 ? (
-          <ul>
-            {instructors.map((instructor) => (
-              <li key={instructor.id}>
-                **{instructor.name}** - {instructor.role}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No instructors found.</p>
-        )}
-      </header>
-    </div>
+    <>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+      <FooterCom />
+    </>
   );
 }
-
-export default App;

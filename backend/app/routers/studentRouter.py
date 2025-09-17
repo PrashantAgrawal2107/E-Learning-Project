@@ -7,7 +7,7 @@ from ..auth.authentication import require_role, get_current_user
 from ..models.studentModel import Student
 from ..schemas.sortSchema import SortSchema
 
-router = APIRouter(prefix="/students", tags=["Students"])
+router = APIRouter(prefix="/api/students", tags=["Students"])
 
 @router.post("/", response_model=studentSchema.StudentResponse)
 def create_student(student: studentSchema.StudentBase, db: Session = Depends(get_db)):
