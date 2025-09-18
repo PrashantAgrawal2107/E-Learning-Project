@@ -96,7 +96,7 @@ const CoursesSection = () => {
   }
 
   return (
-    <section className="py-20 px-4 max-w-7xl mx-auto">
+    <section className="py-20 px-4 max-w-7xl mx-auto ">
       <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">Popular Courses</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {courses.map(course => (
@@ -155,7 +155,7 @@ const InstructorsSection = () => {
   }
 
    return (
-    <section className="py-20 px-4 max-w-7xl mx-auto bg-gray-100 dark:bg-gray-800">
+    <section className="py-20 px-4 max-w-7xl mx-auto bg-gray-100 dark:bg-gray-700">
       <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">Meet Our Instructors</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
         {instructors.map(instructor => (
