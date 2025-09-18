@@ -46,7 +46,7 @@ export default function CourseCard({ course }: CourseCardProps) {
         </div>
       </div>
       <div className="p-6 pt-0">
-        <Link to={`/course/${course.id}`}>
+        <Link to={`/courses/${course.id}`}>
           <button className="w-full mt-4 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-lg shadow-md hover:from-indigo-600 hover:to-purple-600 transition-colors duration-300">
             View Details
           </button>

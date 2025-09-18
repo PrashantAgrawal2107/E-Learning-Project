@@ -5,8 +5,10 @@ import Login from './pages/Login.tsx';
 import About from './pages/About.tsx';
 import Courses from './pages/Courses.tsx';
 import Instructors from './pages/Instructors.tsx';
+import CourseDetails from './pages/CourseDetails.tsx';
 import Header from './components/Header.tsx'; 
 import FooterCom from './components/Footer.tsx'; 
+import InstructorProfile from './pages/InstructorProfile.tsx';
 
 export default function App() {
   return (
@@ -19,6 +21,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/instructors" element={<Instructors />} />
+        <Route path="/courses/:id" element={<CourseDetails />} />
+        <Route path="/instructors/:id" element={<InstructorProfile />} />
       </Routes>
       <FooterCom />
     </>

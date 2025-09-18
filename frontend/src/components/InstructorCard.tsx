@@ -32,7 +32,7 @@ export default function InstructorCard({ instructor }: InstructorCardProps) {
         <span>{instructor.email}</span>
       </p>
       <div className="mt-4">
-        <Link to={`/instructor/${instructor.id}`}>
+        <Link to={`/instructors/${instructor.id}`}>
           <button className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg shadow-md hover:from-purple-600 hover:to-pink-600 transition-colors duration-300">
             View Profile
           </button>
