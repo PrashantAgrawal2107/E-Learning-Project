@@ -9,19 +9,18 @@ type ThemeProviderProps = {
 export default function ThemeProvider({ children }: ThemeProviderProps) {
   const { theme } = useSelector((state: RootState) => state.theme);
 
+  // Agar tumhe sirf wrapper div par dark class lagani hai,
+  // toh document.documentElement se remove kar do
   useEffect(() => {
-    const htmlElement = document.documentElement;
-    if (theme === 'dark') {
-      htmlElement.classList.add('dark');
-    } else {
-      htmlElement.classList.remove('dark');
-    }
-  }, [theme]);
+    // optional: agar html par automatic class lag rahi thi, usko clean karo
+    document.documentElement.classList.remove('dark');
+  }, []);
 
-  // Keep the wrapper div for consistent styling, but the actual dark mode logic is now on the <html> tag.
   return (
-    <div className='bg-white text-gray-700 dark:text-gray-200 dark:bg-[rgb(16,23,42)] min-h-screen transition-colors duration-300'>
-      {children}
-    </div>
+     <div className={theme}>
+           <div className='bg-white text-gray-700 dark:text-gray-200 dark:bg-[rgb(16,23,42)] min-h-screen'>
+                {children}
+           </div>
+        </div>
   );
 }

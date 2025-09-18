@@ -6,7 +6,7 @@ import { store, persistor } from './redux/store.ts';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import ThemeProvider from './components/ThemeProvider.tsx'; // Keep your ThemeProvider
-import { BrowserRouter } from 'react-router-dom';
+
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -15,7 +15,6 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <BrowserRouter>
       <PersistGate persistor={persistor}>
         <Provider store={store}>
           <ThemeProvider> {/* The ThemeProvider logic needs to be inside */}
@@ -23,6 +22,5 @@ ReactDOM.createRoot(rootElement).render(
           </ThemeProvider>
         </Provider>
       </PersistGate>
-    </BrowserRouter>
   </React.StrictMode>
 );

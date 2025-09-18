@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import Home from './pages/Home.tsx'; 
 import SignUp from './pages/SignUp';
 import Login from './pages/Login.tsx';
@@ -9,10 +9,12 @@ import CourseDetails from './pages/CourseDetails.tsx';
 import Header from './components/Header.tsx'; 
 import FooterCom from './components/Footer.tsx'; 
 import InstructorProfile from './pages/InstructorProfile.tsx';
+import ScrollToTop from './components/ScrollToTop.tsx';
 
 export default function App() {
   return (
-    <>
+    <BrowserRouter>
+    <ScrollToTop />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -25,6 +27,6 @@ export default function App() {
         <Route path="/instructors/:id" element={<InstructorProfile />} />
       </Routes>
       <FooterCom />
-    </>
+    </BrowserRouter>
   );
 }
