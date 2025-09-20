@@ -150,6 +150,14 @@ export default function CourseDetails() {
           </div>
         )}
       </div>
+      <div className="mt-8 text-center">
+        <Link
+          to={`/course/${id}/create-module`}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300"
+        >
+          Create New Module
+        </Link>
+      </div>
     </div>
   );
 }
