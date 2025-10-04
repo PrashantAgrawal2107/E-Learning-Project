@@ -14,6 +14,7 @@ router = APIRouter(
 
 @router.post("/", response_model=schemas.CourseResponse , dependencies=[Depends(require_role("instructor"))])
 def create_course(course: schemas.CourseBase, db: Session = Depends(get_db), current_user: Instructor = Depends(get_current_user)):
+    print("hii")
     return services.create_course(course, db, current_user)
 
 @router.get("/", response_model=list[schemas.CourseResponse])

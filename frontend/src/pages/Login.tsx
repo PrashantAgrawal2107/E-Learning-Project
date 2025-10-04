@@ -17,14 +17,6 @@ type FormData = {
   role?: 'student' | 'instructor';
 };
 
-// This should match the type expected by signInSuccess.
-type User = {
-    id: string;
-    name: string;
-    email: string;
-    [key: string]: any;
-} | null;
-
 export default function Login() {
   const [formData, setFormData] = useState<FormData>({ role: 'student' });
 //   const { loading, error: errorMessage } = useSelector((state: RootState) => state.user);
@@ -54,12 +46,12 @@ export default function Login() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      const data: User = await res.json();
+      const data = await res.json();
       if (data && data.success === false) {
         dispatch(signInFailure(data.message));
         return;
       }
-
+      console.log('data: ' , data)
       if (res.ok) {
         dispatch(signInSuccess(data));
         navigate('/');

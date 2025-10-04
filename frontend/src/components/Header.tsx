@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaMoon, FaSun } from 'react-icons/fa';
+import { FaMoon, FaSun, FaPlus } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { signoutSuccess } from '../redux/user/userSlice';
@@ -13,6 +13,9 @@ export default function Header() {
   const { theme } = useSelector((state: RootState) => state.theme);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isInstructor = currentUser && currentUser.role === 'instructor';
+  console.log(isInstructor)
+  console.log(currentUser)
 
   const handleSignout = async () => {
     try {
@@ -70,6 +73,14 @@ export default function Header() {
             Courses
           </Link>
         </div>
+
+        <div className="navbar-links">
+        {isInstructor && (
+          <a href="/create-course" className="add-course-icon">
+            <FaPlus />
+          </a>
+        )}
+      </div>
 
         {/* Right side: Theme Toggle and Auth Buttons/Profile */}
         <div className='flex gap-2 items-center'>

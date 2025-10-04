@@ -26,6 +26,7 @@ def get_current_user(
     db: Session = Depends(get_db),
     token: str = Depends(get_token),
 ):
+    print(token)
     payload = decode_token(token)
     email: Optional[str] = payload.get("sub")
     role: Optional[str] = payload.get("role")
@@ -52,6 +53,7 @@ def get_current_user(
 
 def require_role(*allowed_roles: str):
     def _role_dependency(current_user = Depends(get_current_user)):
+        print(current_user)
         if current_user.role not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

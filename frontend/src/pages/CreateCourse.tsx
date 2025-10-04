@@ -1,74 +1,140 @@
-import { useState, useEffect } from 'react';
-import { FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
-import CourseCard from '../components/CourseCard.tsx';
+import { useState } from 'react';
+import { FaSpinner, FaExclamationTriangle, FaCheckCircle } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-// Re-using the same Course type as the Home page
-type Course = {
-  id: number;
-  name: string;
-  description: string;
-  duration: number;
-  modules: Array<any>;
-  created_on: string;
-  updated_on: string;
-  instructor_id: number;
-  image?: string;
-};
+// Assuming you have defined RootState type in your Redux store
+import type { RootState } from '../redux/store';
 
-export default function Courses() {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function CreateCourse() {
+  const navigate = useNavigate();
+  const { currentUser } = useSelector((state: RootState) => state.user);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    duration: 0,
+  });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const res = await fetch('/api/courses');
-        if (!res.ok) {
-          throw new Error('Failed to fetch courses');
-        }
-        const data = await res.json();
-        setCourses(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData({
+      ...formData,
+      [id]: id === 'duration' ? Number(value) : value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    console.log(currentUser)
+    if (!currentUser || currentUser.role !== 'instructor') {
+      setError("You must be logged in as an instructor to create a course.");
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      const res = await fetch('/api/courses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          instructor_id: currentUser.id, 
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || 'Failed to create course');
       }
-    };
-    fetchCourses();
-  }, []);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <FaSpinner className="animate-spin text-purple-600 dark:text-purple-400" size={48} />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen text-red-500 text-xl">
-        <FaExclamationTriangle className="mr-2" />
-        Error: {error}
-      </div>
-    );
-  }
+      setLoading(false);
+      setSuccess(true);
+      navigate('/courses')
+    } catch (err: any) {
+      setLoading(false);
+      setError(err.message);
+    }
+  };
 
   return (
-    <div className="py-20 px-4 max-w-7xl mx-auto min-h-screen">
+    <div className="py-20 px-4 max-w-2xl mx-auto min-h-screen">
       <h1 className="text-5xl font-bold text-center text-gray-900 dark:text-white mb-12">
-        All Courses
+        Create a New Course
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {courses.map(course => (
-          <CourseCard key={course.id} course={course} />
-        ))}
-      </div>
-      {courses.length === 0 && !loading && !error && (
-        <p className="text-center text-gray-500 dark:text-gray-400 text-lg">No courses found.</p>
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-8">
+        <div className="mb-6">
+          <label htmlFor="name" className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
+            Course Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            placeholder="e.g., 'Introduction to Python'"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+            onChange={handleChange}
+            value={formData.name}
+            required
+          />
+        </div>
+        <div className="mb-6">
+          <label htmlFor="description" className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
+            Description
+          </label>
+          <textarea
+            id="description"
+            rows={4}
+            placeholder="A brief description of the course content..."
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+            onChange={handleChange}
+            value={formData.description}
+          />
+        </div>
+        <div className="mb-6">
+          <label htmlFor="duration" className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
+            Duration (in hours)
+          </label>
+          <input
+            type="number"
+            id="duration"
+            placeholder="e.g., 60"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+            onChange={handleChange}
+            value={formData.duration}
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 disabled:bg-gray-400 dark:bg-purple-500 dark:hover:bg-purple-600"
+        >
+          {loading ? <FaSpinner className="animate-spin inline-block mr-2" /> : 'Create Course'}
+        </button>
+      </form>
+
+      {error && (
+        <div className="mt-4 flex justify-center items-center text-red-500 font-medium">
+          <FaExclamationTriangle className="mr-2" />
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="mt-4 flex justify-center items-center text-green-500 font-medium">
+          <FaCheckCircle className="mr-2" />
+          Course created successfully!
+        </div>
       )}
     </div>
   );
 }
-

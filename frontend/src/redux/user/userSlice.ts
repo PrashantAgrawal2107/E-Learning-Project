@@ -4,6 +4,7 @@ type User = {
     id: string;
     name: string;
     email: string;
+    role: 'instructor' | 'student',
     [key: string]: any;
 } | null;
 
@@ -29,6 +30,7 @@ const userSlice = createSlice({
         },
         signInSuccess: (state, action: PayloadAction<User>) => {
             state.currentUser = action.payload;
+            console.log(state.currentUser);
             state.loading = false;
             state.error = null;
         },
