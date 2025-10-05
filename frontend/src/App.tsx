@@ -12,6 +12,7 @@ import InstructorProfile from './pages/InstructorProfile.tsx';
 import ScrollToTop from './components/ScrollToTop.tsx';
 import CreateCourse from './pages/CreateCourse.tsx'
 import CreateModule from './pages/CreateModule.tsx';
+import OnlyInstructorPrivateRoute from './components/OnlyInstructorPrivateRoute.tsx';
 
 export default function App() {
   return (
@@ -27,9 +28,10 @@ export default function App() {
         <Route path="/instructors" element={<Instructors />} />
         <Route path="/courses/:id" element={<CourseDetails />} />
         <Route path="/instructors/:id" element={<InstructorProfile />} />
-
+        <Route element={<OnlyInstructorPrivateRoute />}>
          <Route path="/create-course" element={<CreateCourse />} />
          <Route path="/course/:courseId/create-module" element={<CreateModule />} />
+         </Route>
       </Routes>
       <FooterCom />
     </BrowserRouter>
