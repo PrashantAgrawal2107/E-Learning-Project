@@ -66,7 +66,6 @@ const CoursesSection = () => {
           throw new Error('Failed to fetch courses');
         }
         const data = await res.json();
-        console.log(data);
         setCourses(data);
       } catch (err: any) {
         setError(err.message);
@@ -125,7 +124,6 @@ const InstructorsSection = () => {
           throw new Error('Failed to fetch instructors');
         }
         const data = await res.json();
-        console.log(data)
         setInstructors(data);
       } catch (err: any) {
         setError(err.message);

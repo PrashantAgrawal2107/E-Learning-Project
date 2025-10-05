@@ -1,13 +1,13 @@
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { useState, type ChangeEvent, type FormEvent, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   signInStart,
   signInSuccess,
   signInFailure,
 } from '../redux/user/userSlice';
-import type { AppDispatch, RootState } from '../redux/store';
+import type { AppDispatch } from '../redux/store';
 
 type FormData = {
   email?: string;
@@ -18,9 +18,6 @@ type FormData = {
 export default function Login() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-
-  // Redux state
-  const { currentUser } = useSelector((state: RootState) => state.user);
 
   // Local states
   const [formData, setFormData] = useState<FormData>({ role: 'student' });

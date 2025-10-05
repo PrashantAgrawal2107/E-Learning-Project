@@ -106,17 +106,18 @@ export default function Header() {
 
           {/* User profile dropdown or sign in button */}
           {currentUser ? (
-            <div className='relative'>
+            <div className='relative bg-gray-200 dark:bg-gray-600 rounded-full'>
               <button
                 className='h-10 w-10 overflow-hidden rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-800'
                 onClick={toggleDropdown}
                 aria-label='Open user menu'
               >
-                <img
+                {/* <img
                   src={currentUser.avatar}
                   alt='user avatar'
                   className='h-full w-full object-cover'
-                />
+                /> */}
+                <span>{currentUser.name[0]}</span>
               </button>
               {isDropdownOpen && (
                 <div className='absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-50'>
