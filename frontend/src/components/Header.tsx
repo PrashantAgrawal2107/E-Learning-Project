@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { FaMoon, FaSun, FaPlus } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaMoon, FaSun } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { signoutSuccess } from '../redux/user/userSlice';
 import { toggleTheme } from '../redux/theme/themeSlice';
 import type { AppDispatch, RootState } from '../redux/store';
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const dispatch = useDispatch<AppDispatch>();
@@ -14,8 +15,12 @@ export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isInstructor = currentUser && currentUser.role === 'instructor';
-  console.log(isInstructor)
-  console.log(currentUser)
+  const navigate = useNavigate();
+
+    useEffect(() => {
+    // Jab bhi currentUser change ho, dropdown close kar do
+    setIsDropdownOpen(false);
+  }, [currentUser]);
 
   const handleSignout = async () => {
     try {
@@ -28,6 +33,7 @@ export default function Header() {
       } else {
         dispatch(signoutSuccess());
       }
+      navigate('/');
     } catch (error: any) {
       console.log(error.message);
     }
@@ -74,13 +80,18 @@ export default function Header() {
           </Link>
         </div>
 
-        <div className="navbar-links">
+      <div className="navbar-links">
         {isInstructor && (
-          <a href="/create-course" className="add-course-icon">
-            <FaPlus />
-          </a>
+          <Link
+            to="/create-course"
+            className="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded-md text-sm font-medium transition-colors"
+          >
+            Add Course
+          </Link>
         )}
       </div>
+
+
 
         {/* Right side: Theme Toggle and Auth Buttons/Profile */}
         <div className='flex gap-2 items-center'>

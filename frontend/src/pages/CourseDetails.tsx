@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FaSpinner, FaExclamationTriangle, FaArrowLeft, FaExternalLinkAlt } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../redux/store';
 
 type Module = {
   id: number;
@@ -16,7 +18,7 @@ type Course = {
   modules: Module[];
   created_on: string;
   updated_on: string;
-  instructor_id: number;
+  instructor_id: string;
   image?: string;
 };
 
@@ -58,6 +60,7 @@ export default function CourseDetails() {
   const [instructor, setInstructor] = useState<Instructor | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { currentUser } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -150,14 +153,16 @@ export default function CourseDetails() {
           </div>
         )}
       </div>
-      <div className="mt-8 text-center">
-        <Link
-          to={`/course/${id}/create-module`}
-          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300"
-        >
-          Create New Module
-        </Link>
-      </div>
+      {currentUser?.role === 'instructor' && currentUser?.id === course.instructor_id && (
+        <div className="mt-8 text-center">
+          <Link
+            to={`/course/${id}/create-module`}
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300"
+          >
+            Add New Module
+          </Link>
+        </div>
+)}
     </div>
   );
 }

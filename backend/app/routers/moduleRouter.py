@@ -8,7 +8,7 @@ from ..models.instructorModel import Instructor
 from ..schemas.sortSchema import SortSchema
 
 router = APIRouter(
-    prefix="/modules",
+    prefix="/api/modules",
     tags=["Modules"]
 )
 

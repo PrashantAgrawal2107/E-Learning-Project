@@ -26,61 +26,61 @@ export default function SignUp() {
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.password) {
-      setErrorMessage('Please fill out all fields.');
-      return;
-    }
-    try {
-      setLoading(true);
-      setErrorMessage(null);
-      if(formData.role=='student'){
-            const res = await fetch('http://localhost:8000/api/students/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData),
-          });
+  e.preventDefault();
+  if (!formData.name || !formData.email || !formData.password) {
+    setErrorMessage('Please fill out all fields.');
+    return;
+  }
+  try {
+    setLoading(true);
+    setErrorMessage(null);
 
-          const data = await res.json();
-          console.log(data);
-          if (data.success === false) {
-            setErrorMessage(data.message);
-            setLoading(false);
-            return;
-          }
-          setLoading(false);
-          if (res.ok) {
-            navigate('/login');
-          }
-      }else{
-           const res = await fetch('http://localhost:8000/api/instructors/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData),
-          });
+    const url =
+      formData.role === 'student'
+        ? 'http://localhost:8000/api/students/'
+        : 'http://localhost:8000/api/instructors/';
 
-          const data = await res.json();
-          console.log(data);
-          if (data.success === false) {
-            setErrorMessage(data.message);
-            setLoading(false);
-            return;
-          }
-          setLoading(false);
-          if (res.ok) {
-            navigate('/login');
-          }
-      }
-      
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+    console.log('Response:', data);
+
+    if (!res.ok) {
+      // ✅ agar FastAPI se "detail" field aayi hai
+      if (data.detail) {
+        setErrorMessage(
+          typeof data.detail === 'string'
+            ? data.detail
+            : Array.isArray(data.detail)
+            ? data.detail.map((d: any) => d.msg).join(', ') // validation errors
+            : 'Something went wrong'
+        );
+      } else if (data.message) {
+        setErrorMessage(data.message);
       } else {
-        setErrorMessage('An unexpected error occurred.');
+        setErrorMessage('Registration failed. Please try again.');
       }
       setLoading(false);
+      return;
     }
-  };
+
+    // ✅ success case
+    setLoading(false);
+    navigate('/login');
+  } catch (error) {
+    if (error instanceof Error) {
+      setErrorMessage(error.message);
+    } else {
+      setErrorMessage('An unexpected error occurred.');
+    }
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className='min-h-screen mt-20'>

@@ -40,11 +40,17 @@ export default function CreateCourse() {
     setError(null);
     setSuccess(false);
 
+  //  const token = document.cookie
+  //                           .split('; ')
+  //                           .find(row => row.startsWith('access_token='))
+  //                           ?.split('=')[1];
+
     try {
       const res = await fetch('/api/courses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          //  Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           ...formData,

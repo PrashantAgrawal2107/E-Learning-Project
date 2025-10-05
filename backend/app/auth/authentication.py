@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from ..core.dbConfig import get_db
 from .security import decode_token , get_token
@@ -23,11 +23,27 @@ def authenticate_user(db: Session, email: str, password: str, role: str):
     return user
 
 def get_current_user(
+    request: Request,
     db: Session = Depends(get_db),
-    token: str = Depends(get_token),
 ):
-    print(token)
-    payload = decode_token(token)
+    # Cookie se access_token nikalna
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token missing in cookies",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    try:
+        payload = decode_token(token)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     email: Optional[str] = payload.get("sub")
     role: Optional[str] = payload.get("role")
 
@@ -38,8 +54,6 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    print(email)
-    print(role)
     user = get_user_by_email(db, email, role)
     
     if not user:

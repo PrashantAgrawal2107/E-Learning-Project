@@ -4,6 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 type ModuleForm = {
   name: string;
   description: string;
+  duration: number;
+  course_id: number | null;
 };
 
 export default function CreateModule() {
@@ -11,6 +13,8 @@ export default function CreateModule() {
   const [formData, setFormData] = useState<ModuleForm>({
     name: '',
     description: '',
+    duration: 0,
+    course_id: null,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +24,7 @@ export default function CreateModule() {
     const { id, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [id]: value,
+      [id]: id === 'duration' ? Number(value) : value,
     }));
   };
 
@@ -28,22 +32,21 @@ export default function CreateModule() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    formData.course_id = Number(courseId);
     try {
-      const res = await fetch(`/api/courses/${courseId}/modules`, {
+      const res = await fetch(`/api/modules`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: formData.name,
-          description: formData.description,
-        }),
+        body: JSON.stringify(formData),
       });
       if (!res.ok) {
-        throw new Error('Failed to create module');
+        const data = await res.json();
+        throw new Error(data.detail || 'Failed to create module');
       }
       await res.json();
-      navigate(`/course/${courseId}`);
+      navigate(`/courses/${courseId}`);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -62,6 +65,7 @@ export default function CreateModule() {
             Error: {error}
           </div>
         )}
+
         <div className="mb-6">
           <label htmlFor="name" className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
             Module Name
@@ -75,9 +79,25 @@ export default function CreateModule() {
             required
           />
         </div>
+
+        <div className="mb-6">
+          <label htmlFor="duration" className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
+            Duration (in hours)
+          </label>
+          <input
+            type="number"
+            id="duration"
+            className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
+            value={formData.duration}
+            onChange={handleChange}
+            required
+            min={1}
+          />
+        </div>
+
         <div className="mb-6">
           <label htmlFor="description" className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
-            Description
+            Description (optional)
           </label>
           <textarea
             id="description"
@@ -85,9 +105,9 @@ export default function CreateModule() {
             rows={4}
             value={formData.description}
             onChange={handleChange}
-            required
           ></textarea>
         </div>
+
         <button
           type="submit"
           className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 disabled:opacity-50"
